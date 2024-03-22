@@ -9,13 +9,28 @@ for(let year = 18; year < 24; year++){
   });
 }
 
-// extract the geometry data
-let geometry = {};
+let organised_data = {};
 allData.forEach(item =>{
   let quarter = item.quarter;
-  if(!(quarter in geometry)){
-    geometry[quarter] = item.geometry;
+  // store geometry and init categorys
+  if(!(quarter in organised_data)){
+    organised_data[quarter] = {
+      geometry: item.geometry,
+      categorys: {}
+    };
   }
+
+  let category = item.fact_category
+  if(!(category in organised_data[quarter].categorys)){
+    organised_data[quarter].categorys[category] = [];
+  }
+
+  // store the data
+  organised_data[quarter].categorys[category].append({
+    year: item.year,
+    month: item.month,
+    total: item.total,
+    geo_point_2d: item.geo_point_2d
+  });
 });
 
-// get data per quarter
