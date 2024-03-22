@@ -1,9 +1,9 @@
 // fetch the data
 let allData = [];
-for(let year = 18; year < 24; year++){
+for(let year = 2018; year < 2024; year++){
   const res = await fetch(`https://data.stad.gent/api/explore/v2.1/catalog/datasets/criminaliteitscijfers-per-wijk-per-maand-gent-${year}/records`);
   if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
-  const data = res.json();
+  const data = await res.json();
   data.results.forEach(item => {
     allData.push(item);
   });
@@ -26,7 +26,7 @@ allData.forEach(item =>{
   }
 
   // store the data
-  organised_data[quarter].categorys[category].append({
+  organised_data[quarter].categorys[category].push({
     year: item.year,
     month: item.month,
     total: item.total,
@@ -34,3 +34,4 @@ allData.forEach(item =>{
   });
 });
 
+process.stdout.write(JSON.stringify(organised_data));

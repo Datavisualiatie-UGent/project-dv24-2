@@ -26,3 +26,7 @@ The data is processed into the following json format:
 }
 ```
 
+You can fetch the data like so:
+```ts
+const data = await FileAttachment("data/data.json").json();
+```
