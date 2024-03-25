@@ -49,6 +49,7 @@ toc: false
 ```js
 // imports
 import {getRegions} from "./components/querys.js";
+import {getCitySVG} from "./components/cityMap.js"
 
 // load the data
 const data = await FileAttachment("data/data.json").json();
@@ -56,5 +57,9 @@ const data = await FileAttachment("data/data.json").json();
 
 ```js echo
 getRegions(data)
+```
+```js
+getCitySVG().node()
+
 ```
 
