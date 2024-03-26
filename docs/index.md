@@ -49,7 +49,6 @@ toc: false
 ```js
 // imports
 import {getRegions} from "./components/querys.js";
-import {getCitySVG} from "./components/cityMap.js"
 
 // load the data
 const data = await FileAttachment("data/data.json").json();
@@ -58,8 +57,19 @@ const data = await FileAttachment("data/data.json").json();
 ```js echo
 getRegions(data)
 ```
-```js
-getCitySVG().node()
+```js echo
+(await fetch("https://raw.githubusercontent.com/bmesuere/belgium-topojson/master/belgium.json")).json()
 
+```
+
+```js
+import {svg} from "npm:htl";
+import {city} from "./components/cityMap.js"
+const nj = (await (await FileAttachment("data/nj-tracts.json")).json())
+const citySVG = city(nj)
+
+```
+```js
+svg`${citySVG}`
 ```
 
