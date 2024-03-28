@@ -48,28 +48,51 @@ toc: false
 
 ```js
 // imports
-import {getRegions} from "./components/querys.js";
+import {getRegions, getCategorys} from "./components/querys.js";
 
 // load the data
 const data = await FileAttachment("data/data.json").json();
+const i = data.Binnenstad
+
 ```
 
 ```js echo
 getRegions(data)
 ```
 ```js echo
-(await fetch("https://raw.githubusercontent.com/bmesuere/belgium-topojson/master/belgium.json")).json()
-
+data
+```
+```js
+import {createGeoData} from "./components/geoData.js"
+const geoData = createGeoData(data)
+console.log(geoData)
 ```
 
 ```js
 import {svg} from "npm:htl";
-import {city} from "./components/cityMap.js"
-const nj = (await (await FileAttachment("data/nj-tracts.json")).json())
-const citySVG = city(nj)
+import {cityNj, gentMap} from "./components/cityMap.js"
 
+const nj = (await (await FileAttachment("data/nj-tracts.json")).json())
+const citySVG = cityNj(nj)
+
+```
+```js 
+const gentTopo = (await (await FileAttachment("data/gent.topojson")).json())
+const gentSVG = gentMap(geoData, gentTopo)
+```
+```js
+svg`${gentSVG}`
 ```
 ```js
 svg`${citySVG}`
+```
+```js echo
+nj
+```
+```js 
+svg`<svg width="200" height="200">
+  <polygon points="100,10 40,198 190,78 10,78 160,198"
+           style="fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;" />
+</svg>`
 ```
 
