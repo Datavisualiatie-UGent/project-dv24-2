@@ -8,7 +8,7 @@ The data is processed into the following json format:
 {
     "Binnenstad": {
         "geometry": {...}, // The geometry data as provided by the api.
-        "categorys": {
+        "categories": {
             "Autodiefstal": [
                 {
                     "year": 2020,           // year of incidents 
