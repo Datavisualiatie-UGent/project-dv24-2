@@ -1,11 +1,14 @@
 import { select } from 'npm:d3-selection';
-import { geoPath, geoMercator, geoTransverseMercator, geoEquirectangular , geoIdentity} from 'npm:d3-geo';
-import {json, create} from 'npm:d3';
-import {feature, mesh} from 'npm:topojson'
-import {topology} from 'npm:topojson-server'
+import { geoPath, geoIdentity} from 'npm:d3-geo';
+import { create} from 'npm:d3';
 
-export function gentMap(data){
-    console.log("data", data)
+
+/**
+ * Renders an SVG of Ghent
+ * @param data the GeoJSON of the map to be rendered
+ * @returns SVG of the map
+ */
+export function cityMap(data){
     const width = 928;
     const height = 1200;
     const svg = create("svg")
@@ -17,6 +20,10 @@ export function gentMap(data){
         .projection(geoIdentity().reflectY(true)
             .fitExtent([[20, 20], [width - 20, height - 20]], data));
 
+    const tooltip = select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
     svg.selectAll("path")
         .data(data.features)
         .enter().append("path")
@@ -24,11 +31,25 @@ export function gentMap(data){
         .attr("d", path)
         .attr('fill', 'none')
         .attr('stroke', '#777') // the border color
+        .on('mouseover', function(d,i) {
+            // todo: Here define plot outside the map
+            console.log('Hovered in:', i.properties.name)
+        })
+        .on('mouseout', function(d,i) {
+            // todo here unselect plot
+            console.log('Hovered out:', i.properties.name)
+        })
+        .on('click', function(d, i) {
+            // d is the click event info
+            // i is the svg that was clicked on
+            // todo Here keep the plot slected when clicked on
+            console.log('Clicked region:', i.properties.name);
+        })
         .append("title")
         .text(function(d) { return d.properties.name; });
 
     svg.append("style").text(`
-    .tract {fill: #eee;}
+    .tract {fill: #eee; cursor: pointer;}
     .tract:hover {fill: orange;}
   `);
 
@@ -36,54 +57,4 @@ export function gentMap(data){
 
 }
 
-
-// The example code
-export function cityNj(nj) { // nj is new jersey json
-    console.log("nj", nj)
-    const width = 928;
-    const height = 1200;
-    const svg = create("svg")
-        .attr("width", width)
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto;");
-
-    const land = feature(nj, {
-        type: "GeometryCollection",
-        geometries: nj.objects.tracts.geometries.filter((d) => (d.id / 10000 | 0) % 100 !== 99)
-    });
-    console.log("land", land)
-
-    // EPSG:32111
-    const path = geoPath()
-        .projection(geoTransverseMercator()
-            .rotate([74 + 30 / 60, -38 - 50 / 60])
-            .fitExtent([[20, 20], [width - 20, height - 20]], land));
-
-    svg.selectAll("path")
-        .data(land.features)
-        .enter().append("path")
-        .attr("class", "tract")
-        .attr("d", path)
-        .append("title")
-        .text(function(d) { return d.id; });
-
-    svg.append("path")
-        .datum(mesh(nj, nj.objects.tracts, function(a, b) { return a !== b; }))
-        .attr("class", "tract-border")
-        .attr("d", path);
-
-    svg.append("style").text(`
-    .tract {fill: #eee;}
-    .tract:hover {fill: orange;}
-    .tract-border {
-      fill: none;
-      stroke: #777;
-      pointer-events: none;
-    }
-  `);
-    console.log("nj svg",svg.node())
-    return svg.node();
-}
 

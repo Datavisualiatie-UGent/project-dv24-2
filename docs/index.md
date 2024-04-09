@@ -52,8 +52,6 @@ import {getRegions, getCategorys} from "./components/querys.js";
 
 // load the data
 const data = await FileAttachment("data/data.json").json();
-const i = data.Binnenstad
-
 ```
 
 ```js echo
@@ -64,26 +62,21 @@ data
 ```
 ```js
 import {createGeoData} from "./components/geoData.js"
-const geoData = createGeoData(data)
-console.log(geoData)
+const geoData = createGeoData(data) // this is for dynamicly creating the geodata
 ```
 
 ```js
 import {svg} from "npm:htl";
-import { gentMap} from "./components/cityMap.js"
+import {cityNj, cityMap} from "./components/cityMap.js"
 
-const nj = (await (await FileAttachment("data/nj-tracts.json")).json())
+const gentSVG = cityMap(geoData)
 
-```
-```js 
-const gentSVG = gentMap(geoData)
 ```
 
 ```js
 svg`${gentSVG}`
 ```
-```js echo
-nj
-```
+
+
 
 

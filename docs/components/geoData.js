@@ -1,3 +1,8 @@
+/**
+ * Create the geojson from the Gent API
+ * @param data the gent api data
+ * @returns GeoJSON data
+ */
 export function createGeoData(data){
     let result = {
         "type": "FeatureCollection",
