@@ -70,29 +70,20 @@ console.log(geoData)
 
 ```js
 import {svg} from "npm:htl";
-import {cityNj, gentMap} from "./components/cityMap.js"
+import { gentMap} from "./components/cityMap.js"
 
 const nj = (await (await FileAttachment("data/nj-tracts.json")).json())
-const citySVG = cityNj(nj)
 
 ```
 ```js 
-const gentTopo = (await (await FileAttachment("data/gent.topojson")).json())
-const gentSVG = gentMap(geoData, gentTopo)
+const gentSVG = gentMap(geoData)
 ```
+
 ```js
 svg`${gentSVG}`
-```
-```js
-svg`${citySVG}`
 ```
 ```js echo
 nj
 ```
-```js 
-svg`<svg width="200" height="200">
-  <polygon points="100,10 40,198 190,78 10,78 160,198"
-           style="fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;" />
-</svg>`
-```
+
 
