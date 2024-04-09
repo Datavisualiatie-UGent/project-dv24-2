@@ -46,16 +46,22 @@ toc: false
 
 # Datavisualisatie
 
+## TODO: add selectors here to select year/period/etc 
+if the data object is modified all further graphs will change
+We will do this via a map.
+
 ```js
-// imports
-import {getRegions, getCategorys} from "./components/querys.js";
+import {getRegions} from "./components/querys.js";
+import {getCategories, getAmountsPerCategory, getAmountsPerYear} from "./components/perCategory.js";
+import * as echarts from "npm:echarts";
 
 // load the data
 const data = await FileAttachment("data/data.json").json();
+const years = [2018, 2019, 2020, 2021, 2022, 2023];
 ```
 
-```js echo
-getRegions(data)
+```js show
+getCategories(data)
 ```
 ```js echo
 data
@@ -80,3 +86,60 @@ svg`${gentSVG}`
 
 
 
+## Amount of crimes
+We can first take a look at the amount of crimes in each category and in each year.
+
+```js
+const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+amountOfCrimesPerCategoryChart.setOption({
+  title: {
+    text: "Total amount of crimes per category."
+  },
+  tooltip: {},
+  xAxis: {
+    type: "category",
+    data: getCategories(data),
+    axisLabel: {
+      interval: 0,
+      rotate: 30
+    }
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "crimes",
+      type: "bar",
+      data: getAmountsPerCategory(data)
+    }
+  ],
+  grid: {containLabel: true}
+});
+```
+
+```js
+const amountOfCrimesPerYear = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+amountOfCrimesPerYear.setOption({
+  title: {
+    text: "Total amount of crimes per year."
+  },
+  tooltip: {},
+  xAxis: {
+    type: "category",
+    data: years,
+    axisLabel: {
+      interval: 0
+    }
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "crimes",
+      type: "bar",
+      data: getAmountsPerYear(data, years)
+    }
+  ],
+  grid: {containLabel: true}
+});
+```
