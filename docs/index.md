@@ -51,40 +51,48 @@ if the data object is modified all further graphs will change
 We will do this via a map.
 
 ```js
-import {getRegions} from "./components/querys.js";
-import {getCategories, getAmountsPerCategory, getAmountsPerYear} from "./components/perCategory.js";
-import * as echarts from "npm:echarts";
+// imports //
 
-// load the data
-const data = await FileAttachment("data/data.json").json();
+// data
+import {loadCrimeData} from "./data/crimes/crimeData.js";
+import {loadGeometryData} from "./data/geometry/geometryData.js";
+
+// components
+import {cityNj, cityMap} from "./components/cityMap.js"
+import {getRegions} from "./components/queries.js";
+import {getCategories, getAmountsPerCategory, getAmountsPerYear} from "./components/perCategory.js";
+
+// misc
+import * as echarts from "npm:echarts";
+import {svg} from "npm:htl";
+```
+
+```js
+// load data
+const crimeData = await loadCrimeData();
+const geoData = await loadGeometryData();
 const years = [2018, 2019, 2020, 2021, 2022, 2023];
 ```
 
 ```js show
-getCategories(data)
+getCategories(crimeData)
 ```
-```js echo
-data
+
+```js show
+getAmountsPerCategory(crimeData)
 ```
-```js
-import {createGeoData} from "./components/geoData.js"
-const geoData = createGeoData(data) // this is for dynamicly creating the geodata
+
+```js show
+getAmountsPerYear(crimeData, years)
 ```
 
 ```js
-import {svg} from "npm:htl";
-import {cityNj, cityMap} from "./components/cityMap.js"
-
 const gentSVG = cityMap(geoData)
-
 ```
 
 ```js
 svg`${gentSVG}`
 ```
-
-
-
 
 ## Amount of crimes
 We can first take a look at the amount of crimes in each category and in each year.
@@ -99,7 +107,7 @@ amountOfCrimesPerCategoryChart.setOption({
   tooltip: {},
   xAxis: {
     type: "category",
-    data: getCategories(data),
+    data: getCategories(crimeData),
     axisLabel: {
       interval: 0,
       rotate: 30
@@ -110,7 +118,7 @@ amountOfCrimesPerCategoryChart.setOption({
     {
       name: "crimes",
       type: "bar",
-      data: getAmountsPerCategory(data)
+      data: getAmountsPerCategory(crimeData)
     }
   ],
   grid: {containLabel: true}
@@ -137,7 +145,7 @@ amountOfCrimesPerYear.setOption({
     {
       name: "crimes",
       type: "bar",
-      data: getAmountsPerYear(data, years)
+      data: getAmountsPerYear(crimeData, years)
     }
   ],
   grid: {containLabel: true}
