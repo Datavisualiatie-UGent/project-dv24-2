@@ -1,13 +1,16 @@
-import {getRegions} from "./querys.js";
+import {getRegions} from "./queries.js";
 
+/**
+ * Get a list of all crime categories
+ */
 export function getCategories(data) {
     let categories = [];
     for (const region of getRegions(data)) {
-        const newCategories = data?.[region]?.["categories"];
+        const newCategories = data?.[region];
         if (newCategories) {
-            for (const categorie of Object.keys(newCategories)) {
-                if (!categories.includes(categorie)) {
-                    categories.push(categorie);
+            for (const category of Object.keys(newCategories)) {
+                if (!categories.includes(category)) {
+                    categories.push(category);
                 }
             }
         }
@@ -15,12 +18,16 @@ export function getCategories(data) {
     return categories;
 }
 
+/**
+ * Get a list of crime amounts per category.
+ * This list is ordered by the output of getCategories.
+ */
 export function getAmountsPerCategory(data) {
     const amounts = [];
-    for (const categorie of getCategories(data)) {
+    for (const category of getCategories(data)) {
         let amount = 0;
         for (const region of getRegions(data)) {
-            const nums = data?.[region]?.["categories"]?.[categorie];
+            const nums = data?.[region]?.[category];
             if (nums) {
                 for (const num of nums) {
                     amount += num.total;
@@ -32,13 +39,18 @@ export function getAmountsPerCategory(data) {
     return amounts;
 }
 
+
+/**
+ * Get a list of crime amounts per year.
+ * This list is ordered by year.
+ */
 export function getAmountsPerYear(data, years) {
     const amounts = [];
     for (const year of years) {
         let amount = 0;
         for (const region of getRegions(data)) {
-            for (const categorie of getCategories(data)) {
-                const nums = data?.[region]?.["categories"]?.[categorie];
+            for (const category of getCategories(data)) {
+                const nums = data?.[region]?.[category];
                 if (nums) {
                     for (const num of nums) {
                         if (parseInt(num.year) === year) {
