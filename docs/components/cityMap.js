@@ -10,7 +10,7 @@ import { create} from 'npm:d3';
  */
 export function cityMap(data){
     const width = 928;
-    const height = 1200;
+    const height = 1000;
     const svg = create("svg")
         .attr("width", width)
         .attr("height", height)
