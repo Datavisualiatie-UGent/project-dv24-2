@@ -63,6 +63,28 @@ const years = [2018, 2019, 2020, 2021, 2022, 2023];
 ```js show
 getCategories(data)
 ```
+```js echo
+data
+```
+```js
+import {createGeoData} from "./components/geoData.js"
+const geoData = createGeoData(data) // this is for dynamicly creating the geodata
+```
+
+```js
+import {svg} from "npm:htl";
+import {cityNj, cityMap} from "./components/cityMap.js"
+
+const gentSVG = cityMap(geoData)
+
+```
+
+```js
+svg`${gentSVG}`
+```
+
+
+
 
 ## Amount of crimes
 We can first take a look at the amount of crimes in each category and in each year.
