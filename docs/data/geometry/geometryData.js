@@ -1,4 +1,4 @@
-import { loadJSON } from '../loadJSON.js'
+import {FileAttachment} from "npm:@observablehq/stdlib";
 
 /* Takes the raw data, returns geometry per region */
 function getGeometry(rawData) {
@@ -37,7 +37,7 @@ export function createGeometryData(rawData){
  * Load the geometry data from file.
  * @returns GeoJSON data
  */
-export async function loadGeometryData(){
-  return await loadJSON('geometry_data.js');
+export function loadGeometryData(){
+  return FileAttachment("geometry_data.json").json();
 }
 

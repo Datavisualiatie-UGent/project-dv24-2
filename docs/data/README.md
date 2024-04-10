@@ -63,7 +63,7 @@ const geometryFromRaw = createGeometryData(rawData);
 
 // option 2: load data //
 // Get crime and geometry data from file
-const crimeFromFile = await loadCrimeData();
-const geometryFromFile = await loadGeometryData();
+const crimeFromFile = loadCrimeData();
+const geometryFromFile = loadGeometryData();
 ```
 Note that `crimeFromRaw` and `crimeFromFile` will be identical. This is the same for `geometryFromRaw` and `geometryFromRaw`.

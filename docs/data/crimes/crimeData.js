@@ -1,4 +1,4 @@
-import { loadJSON } from '../loadJSON.js'
+import {FileAttachment} from "npm:@observablehq/stdlib";
 
 /**
  * Create the crime data object from the Ghent API raw data.
@@ -36,6 +36,6 @@ export function createCrimeData(rawData){
  * Load crime data from file.
  * @returns Crime data
  */
-export async function loadCrimeData(){
-  return await loadJSON('crime_data.js');
+export function loadCrimeData(){
+  return FileAttachment("crime_data.json").json();
 }
