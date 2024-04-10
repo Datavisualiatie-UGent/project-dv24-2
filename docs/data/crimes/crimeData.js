@@ -1,9 +1,9 @@
-import loadJSON from '../loadJSON'
+import { loadJSON } from '../loadJSON.js'
 
 /**
- * Create the organised data object from the Ghent API raw data.
+ * Create the crime data object from the Ghent API raw data.
  * @param rawData The Ghent API data as provided by fetchRawData
- * @returns Organised data
+ * @returns Crime data
  */
 export function createCrimeData(rawData){
   let organised_data = {};
@@ -32,6 +32,10 @@ export function createCrimeData(rawData){
   return organised_data;
 }
 
+/**
+ * Load crime data from file.
+ * @returns Crime data
+ */
 export async function loadCrimeData(){
   return await loadJSON('crime_data.js');
 }

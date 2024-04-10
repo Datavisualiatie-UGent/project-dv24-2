@@ -1,3 +1,5 @@
+import { loadJSON } from '../loadJSON.js'
+
 /* Takes the raw data, returns geometry per region */
 function getGeometry(rawData) {
   let data = {};
@@ -30,3 +32,12 @@ export function createGeometryData(rawData){
     }
     return result;
 }
+
+/**
+ * Load the geometry data from file.
+ * @returns GeoJSON data
+ */
+export async function loadGeometryData(){
+  return await loadJSON('geometry_data.js');
+}
+
