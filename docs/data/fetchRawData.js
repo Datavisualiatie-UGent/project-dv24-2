@@ -1,10 +1,8 @@
-import loadJSON from '../loadJSON'
-
 /**
  * Get all the rows of all the datasets from the Gent API.
  * @returns The raw crime data as a list of JSON objects as provided by the API.
  */
-async function fetchRawData() {
+export async function fetchRawData() {
   let allData = [];
   for(let year = 2018; year < 2024; year++){
     let to_fetch = Infinity;
@@ -24,9 +22,5 @@ async function fetchRawData() {
       offset += 100;
     }
   }
-}
-
-export async function loadGeometryData(){
-  return await loadJSON('geometry_data.js');
 }
 
