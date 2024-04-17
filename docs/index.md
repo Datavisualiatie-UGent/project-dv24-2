@@ -114,6 +114,66 @@ amountOfCrimesPerCategoryChart.setOption({
 ```
 
 ```js
+const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+const queryResult = new Query(crimeData).groupByRegion().getTotal().split();
+
+amountOfCrimesPerCategoryChart.setOption({
+  title: {
+    text: "Total amount of crimes per region."
+  },
+  tooltip: {},
+  xAxis: {
+    type: "category",
+    data: queryResult.keys,
+    axisLabel: {
+      interval: 0,
+      rotate: 30
+    }
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "crimes",
+      type: "bar",
+      data: queryResult.values
+    }
+  ],
+  grid: {containLabel: true}
+});
+```
+
+```js
+const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+const queryResult = new Query(crimeData).groupByMonth().getTotal().split();
+
+amountOfCrimesPerCategoryChart.setOption({
+  title: {
+    text: "Total amount of crimes per month."
+  },
+  tooltip: {},
+  xAxis: {
+    type: "category",
+    data: queryResult.keys,
+    axisLabel: {
+      interval: 0,
+      rotate: 30
+    }
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "crimes",
+      type: "bar",
+      data: queryResult.values
+    }
+  ],
+  grid: {containLabel: true}
+});
+```
+
+```js
 const amountOfCrimesPerYear = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
 
 const queryResult = new Query(crimeData).groupByYear().getTotal().split();

@@ -154,6 +154,40 @@ export class Query
             throw "QueryError: cannot split a non-grouped query."
         }
     }
+
+    getMin() {
+        return
+    }
+
+    getMax() {
+        return
+    }
+
+    aggregate() {
+        return
+    }
+
+    select(entry) {
+        return new Query(this.data[entry]);
+    }
+
+    filterByYear(year) {
+        return this.groupByYear().select(year);
+    }
+
+    filterByMonth(month) {
+        return this.groupByMonth().select(month);
+    }
+
+    filterByCategory(category) {
+        return this.groupByCategory().select(category);
+    }
+
+
+    filterByRegion(region) {
+        return this.groupByRegion().select(region);
+    }
+
 }
 
 /**
