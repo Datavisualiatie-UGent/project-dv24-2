@@ -6,7 +6,7 @@ The data used is about crime numbers in Ghent city and can be found [here](https
 .
 ├── crimes # folder for the crime data
 │   ├── crimeData.js
-│   └── crime_data.json
+│   └── crime_data_old.json
 ├── geometry # folder for the geometry data
 │   ├── geometryData.js
 │   └── geometry_data.json
