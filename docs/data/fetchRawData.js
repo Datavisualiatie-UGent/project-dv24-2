@@ -1,3 +1,7 @@
+import {createCrimeData} from "./crimes/crimeData.js";
+import {createGeometryData} from "./geometry/geometryData.js";
+
+
 /**
  * Get all the rows of all the datasets from the Gent API.
  * @returns The raw crime data as a list of JSON objects as provided by the API.
@@ -22,5 +26,14 @@ export async function fetchRawData() {
       offset += 100;
     }
   }
+  return allData;
+}
+
+export async function createDataJSONs() {
+  const rawdata = await fetchRawData();
+  const crimedata = createCrimeData(rawdata);
+  console.log(JSON.stringify(crimedata));
+  const geometrydata = createGeometryData(rawdata);
+  console.log(JSON.stringify(geometrydata));
 }
 
