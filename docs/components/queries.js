@@ -14,6 +14,50 @@ export class Query
     }
 
     /**
+     * Group the data by region.
+     */
+    groupByRegion() {
+        if (this._final)
+            throw "QueryError: the query is already finalized, grouping should not be done anymore."
+        let groupedObject = {};
+        if (!Array.isArray(this.data)) {
+            for (const [key, value] of Object.entries(this.data)) {
+                groupedObject[key] = new Query(value).groupByRegion().data;
+            }
+        } else {
+            for (const key of getRegions()) {
+                groupedObject[key] = [];
+            }
+            for (const entry of this.data) {
+                groupedObject[entry.region].push(entry);
+            }
+        }
+        return new Query(groupedObject);
+    }
+
+    /**
+     * Group the data by category.
+     */
+    groupByCategory() {
+        if (this._final)
+            throw "QueryError: the query is already finalized, grouping should not be done anymore."
+        let groupedObject = {};
+        if (!Array.isArray(this.data)) {
+            for (const [key, value] of Object.entries(this.data)) {
+                groupedObject[key] = new Query(value).groupByCategory().data;
+            }
+        } else {
+            for (const key of getCategories()) {
+                groupedObject[key] = [];
+            }
+            for (const entry of this.data) {
+                groupedObject[entry.category].push(entry);
+            }
+        }
+        return new Query(groupedObject);
+    }
+
+    /**
      * Group the data by year.
      */
     groupByYear() {
@@ -58,47 +102,127 @@ export class Query
     }
 
     /**
-     * Group the data by category.
+     * Filter the query by region.
      */
-    groupByCategory() {
+    filterByRegion(region) {
         if (this._final)
-            throw "QueryError: the query is already finalized, grouping should not be done anymore."
-        let groupedObject = {};
+            throw "QueryError: the query is already finalized, can not filter the entries anymore."
         if (!Array.isArray(this.data)) {
+            let returnedObject = {};
             for (const [key, value] of Object.entries(this.data)) {
-                groupedObject[key] = new Query(value).groupByCategory().data;
+                returnedObject[key] = new Query(value).filterByRegion(region).data;
             }
+            return new Query(returnedObject, true);
         } else {
-            for (const key of getCategories()) {
-                groupedObject[key] = [];
-            }
-            for (const entry of this.data) {
-                groupedObject[entry.category].push(entry);
-            }
+            return this.groupByRegion().select(region);
         }
-        return new Query(groupedObject);
     }
 
     /**
-     * Group the data by region.
+     * Filter the query by category.
      */
-    groupByRegion() {
+    filterByCategory(category) {
         if (this._final)
-            throw "QueryError: the query is already finalized, grouping should not be done anymore."
-        let groupedObject = {};
+            throw "QueryError: the query is already finalized, can not filter the entries anymore."
         if (!Array.isArray(this.data)) {
+            let returnedObject = {};
             for (const [key, value] of Object.entries(this.data)) {
-                groupedObject[key] = new Query(value).groupByRegion().data;
+                returnedObject[key] = new Query(value).filterByCategory(category).data;
             }
+            return new Query(returnedObject, true);
         } else {
-            for (const key of getRegions()) {
-                groupedObject[key] = [];
-            }
-            for (const entry of this.data) {
-                groupedObject[entry.region].push(entry);
-            }
+            return this.groupByCategory().select(category);
         }
-        return new Query(groupedObject);
+    }
+
+    /**
+     * Filter the query by year.
+     */
+    filterByYear(year) {
+        if (this._final)
+            throw "QueryError: the query is already finalized, can not filter the entries anymore."
+        if (!Array.isArray(this.data)) {
+            let returnedObject = {};
+            for (const [key, value] of Object.entries(this.data)) {
+                returnedObject[key] = new Query(value).filterByYear(year).data;
+            }
+            return new Query(returnedObject, true);
+        } else {
+            return this.groupByYear().select(year);
+        }
+    }
+
+    /**
+     * Filter the query by month.
+     */
+    filterByMonth(month) {
+        if (this._final)
+            throw "QueryError: the query is already finalized, can not filter the entries anymore."
+        if (!Array.isArray(this.data)) {
+            let returnedObject = {};
+            for (const [key, value] of Object.entries(this.data)) {
+                returnedObject[key] = new Query(value).filterByMonth(month).data;
+            }
+            return new Query(returnedObject, true);
+        } else {
+            return this.groupByMonth().select(month);
+        }
+    }
+
+    /**
+     * Filter the result to only include the entries with the minimum total.
+     */
+    filterMin() {
+        if (this._final)
+            throw "QueryError: the query is already finalized, can not filter anymore."
+        if (!Array.isArray(this.data)) {
+            let returnedObject = {};
+            for (const [key, value] of Object.entries(this.data)) {
+                returnedObject[key] = new Query(value).filterMin().data;
+            }
+            return new Query(returnedObject);
+        } else {
+            let min = Infinity;
+            let entries = [];
+            for (const entry of this.data) {
+                if (min > entry.total) {
+                    entries = [];
+                    min = entry.total;
+                }
+                if (min === entry.total) {
+                    entries.push(entry);
+                }
+            }
+            return new Query(entries);
+        }
+    }
+
+    /**
+     * Filter the result to only include the entries with the maximum total.
+     */
+    filterMax() {
+        if (this._final)
+            throw "QueryError: the query is already finalized, can not filter anymore."
+        if (!Array.isArray(this.data)) {
+            let returnedObject = {};
+            for (const [key, value] of Object.entries(this.data)) {
+                returnedObject[key] = new Query(value).filterMax().data;
+            }
+            return new Query(returnedObject);
+        } else {
+            let max = -Infinity;
+            let entries = [];
+            for (const entry of this.data) {
+                if (max < entry.total) {
+                    entries = [];
+                    max = entry.total;
+                }
+                if (max === entry.total) {
+                    entries.push(entry);
+                }
+            }
+            return new Query(entries);
+        }
     }
 
     /**
@@ -190,75 +314,22 @@ export class Query
     }
 
     /**
-     * Filter the result to only include the entries with the minimum total.
-     */
-    filterMin() {
-        if (this._final)
-            throw "QueryError: the query is already finalized, can not filter anymore."
-        if (!Array.isArray(this.data)) {
-            let returnedObject = {};
-            for (const [key, value] of Object.entries(this.data)) {
-                returnedObject[key] = new Query(value).filterMin().data;
-            }
-            return new Query(returnedObject);
-        } else {
-            let min = Infinity;
-            let entries = [];
-            for (const entry of this.data) {
-                if (min > entry.total) {
-                    entries = [];
-                    min = entry.total;
-                }
-                if (min === entry.total) {
-                    entries.push(entry);
-                }
-            }
-            return new Query(entries);
-        }
-    }
-
-    /**
-     * Filter the result to only include the entries with the maximum total.
-     */
-    filterMax() {
-        if (this._final)
-            throw "QueryError: the query is already finalized, can not filter anymore."
-        if (!Array.isArray(this.data)) {
-            let returnedObject = {};
-            for (const [key, value] of Object.entries(this.data)) {
-                returnedObject[key] = new Query(value).filterMax().data;
-            }
-            return new Query(returnedObject);
-        } else {
-            let max = -Infinity;
-            let entries = [];
-            for (const entry of this.data) {
-                if (max < entry.total) {
-                    entries = [];
-                    max = entry.total;
-                }
-                if (max === entry.total) {
-                    entries.push(entry);
-                }
-            }
-            return new Query(entries);
-        }
-    }
-
-    /**
      * Aggregate the outer group back into the query result.
      */
     aggregate(keyWhenNumber="key", combineFunction = (outerKey, innerKey) => `${outerKey} - ${innerKey}`) {
-        if (!Array.isArray(this.data)) {
-            if (this.data[Object.entries(this.data)[0]] instanceof number) {
-                let returnedObject = {};
+        if (!Array.isArray(this.data) && typeof this.data !== "number") {
+            const first_entry = Object.entries(this.data)[0][1];
+            if (typeof first_entry === "number") {
+                let returnedObjects = [];
                 for (const [key, total] of Object.entries(this.data)) {
+                    let returnedObject = {};
                     returnedObject[keyWhenNumber] = key;
                     returnedObject["total"] = total;
+                    returnedObjects.push(returnedObject);
                 }
-                return new Query(returnedObject);
+                return new Query(returnedObjects);
             }
-            else if (Array.isArray(this.data[Object.entries(this.data)[0]])) {
+            else if (Array.isArray(first_entry)) {
                 let returnedObject = [];
                 for (const [_, values] of Object.entries(this.data)) {
                     returnedObject.push(...values);
@@ -272,7 +343,7 @@ export class Query
                         returnedObject[key] = innerValue;
                     }
                 }
-                return new Query(returnedObject);
+                return new Query(returnedObject, this._final);
             }
         } else {
             throw "QueryError: cannot aggregate a non-grouped query."
@@ -287,74 +358,6 @@ export class Query
             return new Query(this.data[entry]);
         } catch (e) {
             throw "QueryError: cannot select entry due to a wrong key or because this is a non-grouped query."
-        }
-    }
-
-    /**
-     * Filter the query by year.
-     */
-    filterByYear(year) {
-        if (this._final)
-            throw "QueryError: the query is already finalized, can not filter the entries anymore."
-        if (!Array.isArray(this.data)) {
-            let returnedObject = {};
-            for (const [key, value] of Object.entries(this.data)) {
-                returnedObject[key] = new Query(value).filterByYear(year).data;
-            }
-            return new Query(returnedObject, true);
-        } else {
-            return this.groupByYear().select(year);
-        }
-    }
-
-    /**
-     * Filter the query by month.
-     */
-    filterByMonth(month) {
-        if (this._final)
-            throw "QueryError: the query is already finalized, can not filter the entries anymore."
-        if (!Array.isArray(this.data)) {
-            let returnedObject = {};
-            for (const [key, value] of Object.entries(this.data)) {
-                returnedObject[key] = new Query(value).filterByMonth(month).data;
-            }
-            return new Query(returnedObject, true);
-        } else {
-            return this.groupByMonth().select(month);
-        }
-    }
-
-    /**
-     * Filter the query by category.
-     */
-    filterByCategory(category) {
-        if (this._final)
-            throw "QueryError: the query is already finalized, can not filter the entries anymore."
-        if (!Array.isArray(this.data)) {
-            let returnedObject = {};
-            for (const [key, value] of Object.entries(this.data)) {
-                returnedObject[key] = new Query(value).filterByCategory(category).data;
-            }
-            return new Query(returnedObject, true);
-        } else {
-            return this.groupByCategory().select(category);
-        }
-    }
-
-    /**
-     * Filter the query by region.
-     */
-    filterByRegion(region) {
-        if (this._final)
-            throw "QueryError: the query is already finalized, can not filter the entries anymore."
-        if (!Array.isArray(this.data)) {
-            let returnedObject = {};
-            for (const [key, value] of Object.entries(this.data)) {
-                returnedObject[key] = new Query(value).filterByRegion(region).data;
-            }
-            return new Query(returnedObject, true);
-        } else {
-            return this.groupByRegion().select(region);
         }
     }
 

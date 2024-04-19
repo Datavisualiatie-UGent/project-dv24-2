@@ -6,7 +6,7 @@ The data used is about crime numbers in Ghent city and can be found [here](https
 .
 ├── crimes # folder for the crime data
 │   ├── crimeData.js
-│   └── crime_data_old.json
+│   └── crime_data.json
 ├── geometry # folder for the geometry data
 │   ├── geometryData.js
 │   └── geometry_data.json
@@ -27,25 +27,24 @@ either be fetched from the api, or loaded from file. The latter is much faster.
 Ghent city is devided in separate regions. The geometry data provides a way to create a map of Ghent with these regions.
 
 ### Crime data
-This is the actual data of the crimes. The data is structured as follows:
+This is the actual data of the crimes. The data is a huge array of entries as followed:
 ```json
-{
-    "Binnenstad": {
-        "Autodiefstal": [
-            {
-                "year": 2020,           // year of incidents 
-                "month": "juni",        // month of incidents
-                "total": 8,             // total amount of incedents
-                "geo_point_2d": {...}   // 2d geometry data
-            }
-        ],
-        ...
-        // Each category has it's own list of data rows
-    },
-    ...
-    // Each sub region of Ghent has it's own json
-}
+[
+  {
+    "year": 2020,               // year of incidents 
+    "month": "juni",            // month of incidents
+    "category": "Autodiefstal", // the type of the crime
+    "region": "Binnenstad",     // where the crime took place
+    "total": 8,                 // total amount of incedents
+    "geo_point_2d": {...}       // 2d geometry data
+  }
+  ...
+]
 ```
+To work with the crime data we have implemented a [Query class in the queries.js file](../components/queries.js) that makes our life easier when querying the data.
+You can read its documentation [here](../components/README.md).
+
+
 ### Acquiring data example
 ```js
 import { fetchRawData } from './data/fetchRawData.js';

@@ -59,7 +59,7 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
-import {getRegions, Query} from "./components/queries.js";
+import {Query} from "./components/queries.js";
 
 // misc
 import * as echarts from "npm:echarts";
