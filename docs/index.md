@@ -51,41 +51,42 @@ if the data object is modified all further graphs will change
 We will do this via a map.
 
 ```js
-import {getRegions} from "./components/querys.js";
-import {getCategories, getAmountsPerCategory, getAmountsPerYear} from "./components/perCategory.js";
-import * as echarts from "npm:echarts";
+// imports 
 
-// load the data
-const data = await FileAttachment("data/data.json").json();
-const years = [2018, 2019, 2020, 2021, 2022, 2023];
-```
+// data
+import {loadCrimeData} from "./data/crimes/crimeData.js";
+import {loadGeometryData} from "./data/geometry/geometryData.js";
 
-
-```js
-import {createGeoData} from "./components/geoData.js"
-const geoData = createGeoData(data) // this is for dynamicly creating the geodata
-```
-
-```js
-import {svg} from "npm:htl";
+// components
 import {cityNj, cityMap} from "./components/cityMap.js"
+import {Query} from "./components/queries.js";
 
+// misc
+import * as echarts from "npm:echarts";
+import {svg} from "npm:htl";
+```
+
+```js
+// load data
+const crimeData = await loadCrimeData();
+const geoData = await loadGeometryData();
+```
+
+```js
 const gentSVG = cityMap(geoData)
-
 ```
 
 ```js
 svg`${gentSVG}`
 ```
 
-
-
-
 ## Amount of crimes
 We can first take a look at the amount of crimes in each category and in each year.
 
 ```js
 const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+const queryResult = new Query(crimeData).groupByCategory().getTotal().split();
 
 amountOfCrimesPerCategoryChart.setOption({
   title: {
@@ -94,7 +95,7 @@ amountOfCrimesPerCategoryChart.setOption({
   tooltip: {},
   xAxis: {
     type: "category",
-    data: getCategories(data),
+    data: queryResult.keys,
     axisLabel: {
       interval: 0,
       rotate: 30
@@ -105,7 +106,67 @@ amountOfCrimesPerCategoryChart.setOption({
     {
       name: "crimes",
       type: "bar",
-      data: getAmountsPerCategory(data)
+      data: queryResult.values
+    }
+  ],
+  grid: {containLabel: true}
+});
+```
+
+```js
+const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+const queryResult = new Query(crimeData).groupByRegion().getTotal().split();
+
+amountOfCrimesPerCategoryChart.setOption({
+  title: {
+    text: "Total amount of crimes per region."
+  },
+  tooltip: {},
+  xAxis: {
+    type: "category",
+    data: queryResult.keys,
+    axisLabel: {
+      interval: 0,
+      rotate: 30
+    }
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "crimes",
+      type: "bar",
+      data: queryResult.values
+    }
+  ],
+  grid: {containLabel: true}
+});
+```
+
+```js
+const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
+
+const queryResult = new Query(crimeData).groupByMonth().getTotal().split();
+
+amountOfCrimesPerCategoryChart.setOption({
+  title: {
+    text: "Total amount of crimes per month."
+  },
+  tooltip: {},
+  xAxis: {
+    type: "category",
+    data: queryResult.keys,
+    axisLabel: {
+      interval: 0,
+      rotate: 30
+    }
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "crimes",
+      type: "bar",
+      data: queryResult.values
     }
   ],
   grid: {containLabel: true}
@@ -115,6 +176,8 @@ amountOfCrimesPerCategoryChart.setOption({
 ```js
 const amountOfCrimesPerYear = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
 
+const queryResult = new Query(crimeData).groupByYear().getTotal().split();
+
 amountOfCrimesPerYear.setOption({
   title: {
     text: "Total amount of crimes per year."
@@ -122,7 +185,7 @@ amountOfCrimesPerYear.setOption({
   tooltip: {},
   xAxis: {
     type: "category",
-    data: years,
+    data: queryResult.keys,
     axisLabel: {
       interval: 0
     }
@@ -132,7 +195,7 @@ amountOfCrimesPerYear.setOption({
     {
       name: "crimes",
       type: "bar",
-      data: getAmountsPerYear(data, years)
+      data: queryResult.values
     }
   ],
   grid: {containLabel: true}
