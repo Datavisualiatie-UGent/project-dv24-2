@@ -1,6 +1,6 @@
 import { select } from 'npm:d3-selection';
 import { geoPath, geoIdentity, geoAzimuthalEquidistant, geoAzimuthalEqualArea} from 'npm:d3-geo';
-import  {pointer, create, scaleLinear} from 'npm:d3';
+import  {range, pointer, create, scaleLinear,extent, scaleQuantile, axisBottom, format, scaleThreshold} from 'npm:d3';
 import {Query} from "./queries.js";
 
 
@@ -14,11 +14,10 @@ export function cityMap(geoData, crimeData){
     // svg data
     const width = 800;
     const height = 800;
-    select("#div_template")
+    select("#map_div")
     .attr("width", width)
     .attr("height", height)
-    const svg =  select("#div_template")
-        .append("svg")
+    const svg =  create("svg")
         .attr("id", "myMap")
         .attr("width", width)
         .attr("height", height)
@@ -30,25 +29,93 @@ export function cityMap(geoData, crimeData){
             .fitExtent([[20, 20], [width , height ]], geoData)
         );
     // heatmap
-
-
-
-    const query = new Query(crimeData)
-    const myColor = scaleLinear()
-        .range(["white", "#69b3a2"])
-        .domain([1,100])
-    // total crimes regarded, categories and time should be defined outside
-    const total = query.getTotal().data
-    const crimeColor = (name)=>{
-        const t = new Query(query.groupByRegion().data[name]).getTotal().data
-        const v = scaleLinear()
-            .range(["white", "#69b3a2"])
-            .domain([1,total])
-        return v(t)
+    const colors = ["#ffffcc",
+    "#ffeda0", "#fed976", "#feb24c", "#fd8d3c",
+    "#fc4e2a", "#e31a1c", "#bd0026", "#800026"]
+    const customRound = (x) =>{
+        if (x < 100) {
+            // Round to the nearest ten for small numbers
+            return Math.floor(x / 10) * 10;
+        } else{
+            // Round to the nearest hundred for larger numbers  
+            return Math.floor(x / 100) * 100;
+        }
+        // can be extended for larger values...
     }
 
-    // create a tooltip
-    const tooltip = select("#div_template")
+    const query = new Query(crimeData)
+    // total crimes regarded, categories and time should be defined outside
+    const total = query.getTotal().data
+    const regions = query.groupByRegion().data
+    // get a list of all the values to determine the scale
+    const extent_list = []
+    for (const key in regions){
+        extent_list.push(customRound(new Query(regions[key]).getTotal().data))
+    }
+    const quantileScale = scaleQuantile()
+    .domain(extent_list)
+    .range(colors);
+    // Round the quantile thresholds
+    const thresholds = quantileScale.range().map((color, i) => {
+        return customRound(quantileScale.invertExtent(color)[0]);
+    })
+    //transform it to a threshold scale for nicer bounds
+    const tScale = scaleThreshold(thresholds, colors)
+    
+    const crimeColor = (name)=>{
+        let value = new Query(regions[name]).getTotal().data
+        return tScale(value);
+    }
+    // LEGEND
+
+    // Define the size and position of the legend
+    const legendWidth = 600;
+    const legendHeight = 20;
+    const legendX = 50;
+    const legendY = height - 50; // position the legend at the bottom of the SVG
+
+    // Create a linear scale for the legend
+    const legendScale = scaleLinear()
+    .domain(tScale.domain())
+    .range([0, legendWidth]);
+
+    // Create the legend group
+    const legend = svg.append("g")
+    .attr("transform", `translate(${legendX}, ${legendY})`);
+
+    // Create one rectangle for each color in the scale
+    tScale.range().forEach((color, i) => {
+    legend.append("rect")
+        .attr("x", i * (legendWidth / tScale.range().length))
+        .attr("width", legendWidth / tScale.range().length)
+        .attr("height", legendHeight)
+        .attr("fill", color);
+
+        // Add a label for each color
+        legend.append("text")
+        .attr("x", i * (legendWidth / tScale.range().length))
+        .attr("y", legendHeight + 20) // position the label below the rectangle
+        .text(i < tScale.domain().length ? tScale.domain()[i] : ""); // use the threshold value as the label
+    });
+
+    // Add a legend title
+    legend.append("text")
+    .attr("x", -10)
+    .attr("y", -10)
+    .text("Crime Rate");
+
+    // Add an axis to the legend
+    const legendAxis = axisBottom(legendScale)
+    .tickValues([])
+    .tickFormat("");
+
+    legend.append("g")
+    .attr("transform", `translate(0, ${legendHeight})`)
+    .call(legendAxis);
+    
+    
+        // create a tooltip
+    const tooltip = select("#map_div")
         .append("div")
         .style("opacity", 0)
         .attr("class", "tooltip")
@@ -61,7 +128,6 @@ export function cityMap(geoData, crimeData){
         .style( "align-content", "center")
         .style( "margin-right", "10%")
         .style("margin-left", "10%")
-    console.log(tooltip)
     // Three function that change the tooltip when user hover / move / leave a cell
     const mouseover = function(d) {
         tooltip
@@ -71,18 +137,18 @@ export function cityMap(geoData, crimeData){
             .style("opacity", 1)
     }
     const mousemove = function(d,i) {
-        const div = select("#div_template").node().getBoundingClientRect();
-
-        console.log(d)
+        const div = svg.node().getBoundingClientRect();
+        const value =  new Query(regions[i.properties.name]).getTotal().data
         tooltip
-            .html("The exact value of<br>this cell is: ")
+            .html(`${i.properties.name}: <br> ${value}`)//change this
             .style("left", (d.clientX - div.left -100 ) + "px")
             .style("top", (d.clientY - div.top + 70) + "px")
     }
-    const mouseleave = function(d) {
+    const mouseleave = function(d, i) {
         tooltip
             .style("opacity", 0)
         select(this)
+            //.attr("fill", crimeColor(i.properties.name))
             .style("stroke", "#777")
             .style("opacity", 0.8)
     }
@@ -94,10 +160,10 @@ export function cityMap(geoData, crimeData){
         .attr("class", "tract")
         .attr("d", path)
         .attr('fill', function (d){
-            //d.properties.name
             return crimeColor(d.properties.name)
         })
         .attr('stroke', '#777') // the border color
+        .style("opacity", 0.8)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
@@ -109,6 +175,7 @@ export function cityMap(geoData, crimeData){
         })
         .append("title")
         .text(function(d) { return d.properties.name; });
+        
 
 
     const bnw = new Query(query.groupByRegion().data["Binnenstad"])
@@ -116,16 +183,12 @@ export function cityMap(geoData, crimeData){
     //console.log(y.groupByMonth())
 
 
-   /* svg.append("style").text(`
-    .tract {fill: #eee; 
+    svg.append("style").text(`
+    .tract { 
     cursor: pointer;}
-    .tract:hover {fill: orange;}
-  `);*/
-
-
-
-
-    //return svg;
+    
+  `);
+    return svg;
 
 }
 

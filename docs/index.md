@@ -71,14 +71,19 @@ import {svg} from "npm:htl";
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
 ```
-
 ```html
-<div id="div_template"></div>
+<div id="legend"></div>
+
+```
+```html
+<div id="map_div"></div>
 ```
 ```js
 const gentSVG = cityMap(geoData,crimeData)
 ```
-
+```js
+svg`${gentSVG.node()}`
+```
 
 
 ## Amount of crimes
