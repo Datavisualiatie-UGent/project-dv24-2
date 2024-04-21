@@ -58,7 +58,7 @@ import {loadCrimeData} from "./data/crimes/crimeData.js";
 import {loadGeometryData} from "./data/geometry/geometryData.js";
 
 // components
-import {cityNj, cityMap} from "./components/cityMap.js"
+import {cityMap} from "./components/cityMap.js"
 import {Query} from "./components/queries.js";
 
 // misc
@@ -72,13 +72,14 @@ const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
 ```
 
+```html
+<div id="div_template"></div>
+```
 ```js
-const gentSVG = cityMap(geoData)
+const gentSVG = cityMap(geoData,crimeData)
 ```
 
-```js
-svg`${gentSVG}`
-```
+
 
 ## Amount of crimes
 We can first take a look at the amount of crimes in each category and in each year.
