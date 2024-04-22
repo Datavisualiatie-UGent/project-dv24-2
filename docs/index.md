@@ -59,6 +59,7 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
+import {parallel} from "./components/parallel.js"
 import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
 
 // misc
@@ -71,96 +72,6 @@ import {svg} from "npm:htl";
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
 ```
-## Rankings
-```js
-const years = getYears().map(String);
-const categories = getCategories();
-const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
-const category = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
-```
-```js
-const res = new Query(crimeData)
-    .filterByYear(Number(year))
-    .filterByCategory(category)
-    .groupByMonth()
-    .result();
-```
-```js
-const sortListAndGetNames = list => {
-  return list.sort((a, b) => {
-    if (a.total === b.total) {
-      return a.region.localeCompare(b.region);
-    }
-    return a.total - b.total;
-  }).map(obj => obj.region);
-};
-
-const sortedData = {}
-Object.entries(res).forEach(([month, list]) => {
-    sortedData[month] = sortListAndGetNames(list)
-})
-```
-
-```js
-const months = getMonths();
-function getMonthIdx(monthName) {
-    const idx = months.indexOf(monthName);
-    if (idx !== -1) {
-        return (idx + 1).toString().padStart(2, '0');
-    } else {
-        return null; // Month not found
-    }
-}
-```
-
-```js
-const plotData = []
-Object.entries(sortedData).forEach(([month, regions]) => {
-    regions.forEach((name, idx) => {
-        const dateString = `${year}-${getMonthIdx(month)}-01`;
-        const [y, m, d] = dateString.split('-').map(Number);
-        const dateDate = new Date(y, m - 1, d);
-        plotData.push({
-            Datum: dateDate,
-            Regio: name,
-            Ranking: idx + 1
-        });
-    });
-})
-```
-
-```js
-const plot = Plot.plot({
-    color: {legend: true, columns: 4},
-    marks: [
-        Plot.ruleY([0]),
-        Plot.lineY(plotData, {x: "Datum", y: "Ranking", stroke: "Regio", marker: true, tip: true}),
-    ],
-})
-```
-
-```js
-// highlight on hover
-d3.select(plot)
-  .selectAll("path")
-  .on("pointerenter", function() {
-    d3.select(plot).selectAll("path").attr("opacity", 0.2);
-    d3.select(this).attr("opacity", 1);
-  });
-
-
-// Reset the appearance when the pointer leaves the SVG
-d3.select(plot).on("pointerleave", function() {
-  d3.select(plot).selectAll("path").attr("opacity", 1);
-});
-
-// Attach the plot to the container DIV
-d3.select('#chart').append(() => plot)
-```
-```js
-display(plot)
-```
-
 ## Map
 
 ```js
@@ -170,6 +81,21 @@ const gentSVG = cityMap(geoData)
 ```js
 svg`${gentSVG}`
 ```
+
+## Rankings
+```js
+const years = getYears().map(String);
+const categories = getCategories();
+const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
+const category = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
+```
+
+```js
+display(parallel(crimeData, year, category));
+```
+
+
+
 ## Amount of crimes
 We can first take a look at the amount of crimes in each category and in each year.
 
