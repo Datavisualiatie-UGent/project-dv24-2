@@ -78,14 +78,19 @@ const months = getMonths();
 const categories = getCategories();
 ```
 ## Map
+```html
+<div id="legend"></div>
 
+```
+```html
+<div id="map_div"></div>
+```
 ```js
-const gentSVG = cityMap(geoData)
+const gentSVG = cityMap(geoData,crimeData)
+display(gentSVG.node())
+
 ```
 
-```js
-svg`${gentSVG}`
-```
 
 ## Line chart
 
