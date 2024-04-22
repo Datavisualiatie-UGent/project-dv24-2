@@ -59,7 +59,8 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
-import {Query} from "./components/queries.js";
+import {parallel} from "./components/parallel.js"
+import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
 
 // misc
 import * as echarts from "npm:echarts";
@@ -71,6 +72,7 @@ import {svg} from "npm:htl";
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
 ```
+## Map
 
 ```js
 const gentSVG = cityMap(geoData)
@@ -79,6 +81,20 @@ const gentSVG = cityMap(geoData)
 ```js
 svg`${gentSVG}`
 ```
+
+## Rankings
+```js
+const years = getYears().map(String);
+const categories = getCategories();
+const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
+const category = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
+```
+
+```js
+display(parallel(crimeData, year, category));
+```
+
+
 
 ## Amount of crimes
 We can first take a look at the amount of crimes in each category and in each year.
@@ -201,3 +217,4 @@ amountOfCrimesPerYear.setOption({
   grid: {containLabel: true}
 });
 ```
+
