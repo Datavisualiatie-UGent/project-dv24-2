@@ -59,6 +59,7 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
+import {lineChart} from "./components/lineChart.js"
 import {parallel} from "./components/parallel.js"
 import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
 
@@ -71,6 +72,10 @@ import {svg} from "npm:htl";
 // load data
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
+
+// basic data
+const months = getMonths();
+const categories = getCategories();
 ```
 ## Map
 
@@ -82,22 +87,34 @@ const gentSVG = cityMap(geoData)
 svg`${gentSVG}`
 ```
 
+## Line chart
+
+```js
+const category = view(Inputs.select([null].concat(categories), {label: "Selecteer categorie:"}));
+```
+```js
+const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYear().groupByMonth().aggregate("n.a.", (year, month) => {
+    let index = (months.indexOf(month) + 1).toString();
+    if (index.length < 2) {
+        index = `0${index}`;
+    }
+    return `${year}-${index}-01`;
+}).getTotal().aggregate("date").result();
+
+display(lineChart(resultPerMonth, "date", "total"));
+```
 ## Rankings
 ```js
 const years = getYears().map(String);
-const categories = getCategories();
 const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
-const category = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
+const category_parallel = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
 ```
 
 ```js
-display(parallel(crimeData, year, category));
+display(parallel(crimeData, year, category_parallel));
 ```
-
-
-
 ## Amount of crimes
-We can first take a look at the amount of crimes in each category and in each year.
+We can then take a look at the amount of crimes in each category and in each year.
 
 ```js
 const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
