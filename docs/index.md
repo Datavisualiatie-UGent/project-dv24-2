@@ -85,7 +85,7 @@ const gentSVG = cityMap(geoData)
 svg`${gentSVG}`
 ```
 
-# Line charts
+## Line chart
 
 ```js
 const category = view(Inputs.select([null].concat(categories), {label: "Selecteer categorie:"}));
