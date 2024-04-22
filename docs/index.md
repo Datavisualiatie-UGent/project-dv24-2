@@ -59,7 +59,8 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
-import {Query} from "./components/queries.js";
+import {lineChart} from "./components/lineChart.js"
+import {Query, getMonths, getCategories} from "./components/queries.js";
 
 // misc
 import * as echarts from "npm:echarts";
@@ -70,6 +71,10 @@ import {svg} from "npm:htl";
 // load data
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
+
+// basic data
+const months = getMonths();
+const categories = getCategories();
 ```
 
 ```js
@@ -80,8 +85,25 @@ const gentSVG = cityMap(geoData)
 svg`${gentSVG}`
 ```
 
+# Line charts
+
+```js
+const category = view(Inputs.select([null].concat(categories), {label: "Selecteer categorie:"}));
+```
+```js
+const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYear().groupByMonth().aggregate("n.a.", (year, month) => {
+    let index = (months.indexOf(month) + 1).toString();
+    if (index.length < 2) {
+        index = `0${index}`;
+    }
+    return `${year}-${index}-01`;
+}).getTotal().aggregate("date").result();
+
+display(lineChart(resultPerMonth, "date", "total"));
+```
+
 ## Amount of crimes
-We can first take a look at the amount of crimes in each category and in each year.
+We can then take a look at the amount of crimes in each category and in each year.
 
 ```js
 const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
@@ -201,3 +223,4 @@ amountOfCrimesPerYear.setOption({
   grid: {containLabel: true}
 });
 ```
+

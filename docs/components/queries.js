@@ -105,6 +105,9 @@ export class Query
      * Filter the query by region.
      */
     filterByRegion(region) {
+        if (region === null) {
+            return this;
+        }
         if (this._final)
             throw "QueryError: the query is already finalized, can not filter the entries anymore."
         if (!Array.isArray(this.data)) {
@@ -122,6 +125,9 @@ export class Query
      * Filter the query by category.
      */
     filterByCategory(category) {
+        if (category === null) {
+            return this;
+        }
         if (this._final)
             throw "QueryError: the query is already finalized, can not filter the entries anymore."
         if (!Array.isArray(this.data)) {
@@ -139,6 +145,9 @@ export class Query
      * Filter the query by year.
      */
     filterByYear(year) {
+        if (year === null) {
+            return this;
+        }
         if (this._final)
             throw "QueryError: the query is already finalized, can not filter the entries anymore."
         if (!Array.isArray(this.data)) {
@@ -156,6 +165,9 @@ export class Query
      * Filter the query by month.
      */
     filterByMonth(month) {
+        if (month === null) {
+            return this;
+        }
         if (this._final)
             throw "QueryError: the query is already finalized, can not filter the entries anymore."
         if (!Array.isArray(this.data)) {
