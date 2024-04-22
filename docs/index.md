@@ -60,7 +60,8 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
 import {lineChart} from "./components/lineChart.js"
-import {Query, getMonths, getCategories} from "./components/queries.js";
+import {parallel} from "./components/parallel.js"
+import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
 
 // misc
 import * as echarts from "npm:echarts";
@@ -76,6 +77,7 @@ const geoData = await loadGeometryData();
 const months = getMonths();
 const categories = getCategories();
 ```
+## Map
 
 ```js
 const gentSVG = cityMap(geoData)
@@ -101,7 +103,16 @@ const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYe
 
 display(lineChart(resultPerMonth, "date", "total"));
 ```
+## Rankings
+```js
+const years = getYears().map(String);
+const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
+const category_parallel = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
+```
 
+```js
+display(parallel(crimeData, year, category_parallel));
+```
 ## Amount of crimes
 We can then take a look at the amount of crimes in each category and in each year.
 
