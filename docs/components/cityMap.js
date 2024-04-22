@@ -45,12 +45,12 @@ export function cityMap(geoData, crimeData){
 
     const query = new Query(crimeData)
     // total crimes regarded, categories and time should be defined outside
-    const total = query.getTotal().data
-    const regions = query.groupByRegion().data
+    const total = query.getTotal().result()
+    const regions = query.groupByRegion().result()
     // get a list of all the values to determine the scale
     const extent_list = []
     for (const key in regions){
-        extent_list.push(customRound(new Query(regions[key]).getTotal().data))
+        extent_list.push(customRound(new Query(regions[key]).getTotal().result()))
     }
     const quantileScale = scaleQuantile()
     .domain(extent_list)
@@ -63,7 +63,7 @@ export function cityMap(geoData, crimeData){
     const tScale = scaleThreshold(thresholds, colors)
     
     const crimeColor = (name)=>{
-        let value = new Query(regions[name]).getTotal().data
+        const value = query.filterByRegion(name).getTotal().result()
         return tScale(value);
     }
     // LEGEND
@@ -138,7 +138,7 @@ export function cityMap(geoData, crimeData){
     }
     const mousemove = function(d,i) {
         const div = svg.node().getBoundingClientRect();
-        const value =  new Query(regions[i.properties.name]).getTotal().data
+        const value = query.filterByRegion(i.properties.name).getTotal().result()
         tooltip
             .html(`${i.properties.name}: <br> ${value}`)//change this
             .style("left", (d.clientX - div.left -100 ) + "px")
@@ -148,7 +148,6 @@ export function cityMap(geoData, crimeData){
         tooltip
             .style("opacity", 0)
         select(this)
-            //.attr("fill", crimeColor(i.properties.name))
             .style("stroke", "#777")
             .style("opacity", 0.8)
     }
@@ -175,19 +174,11 @@ export function cityMap(geoData, crimeData){
         })
         .append("title")
         .text(function(d) { return d.properties.name; });
-        
-
-
-    const bnw = new Query(query.groupByRegion().data["Binnenstad"])
-    const y = new Query(bnw.filterByCategory("Diefstal uit of aan voertuigen").groupByYear().data)
-    //console.log(y.groupByMonth())
-
 
     svg.append("style").text(`
     .tract { 
     cursor: pointer;}
-    
-  `);
+    `);
     return svg;
 
 }
