@@ -142,7 +142,7 @@ export function cityMap(geoData, crimeData){
         tooltip
             .html(`${i.properties.name}: <br> ${value}`)//change this
             .style("left", (d.clientX - div.left -100 ) + "px")
-            .style("top", (d.clientY - div.top + 70) + "px")
+            .style("top", (d.clientY - div.top + 110) + "px")
     }
     const mouseleave = function(d, i) {
         tooltip
