@@ -80,9 +80,8 @@ const geoData = await loadGeometryData();
 ```
 ```js
 const gentSVG = cityMap(geoData,crimeData)
-```
-```js
-svg`${gentSVG.node()}`
+display(gentSVG.node())
+
 ```
 
 
