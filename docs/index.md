@@ -1,7 +1,7 @@
 ---
 toc: false
+theme: air
 ---
-
 <style>
 
 .hero {
@@ -44,12 +44,11 @@ toc: false
 
 </style>
 
-# Datavisualisatie
+# Criminaliteitscijfers Gent
+Brent Matthys, Warre Provoost en Mats Van Belle
+***
 
-## TODO: add selectors here to select year/period/etc 
-if the data object is modified all further graphs will change
-We will do this via a map.
-
+Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de [dataset van Criminaliteitscijfers in Gent](https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers) te visualiseren.
 ```js
 // imports 
 
@@ -66,30 +65,114 @@ import {Query, getMonths, getYears, getCategories} from "./components/queries.js
 // misc
 import * as echarts from "npm:echarts";
 import {svg} from "npm:htl";
+import * as d3 from "npm:d3";
 ```
 
 ```js
 // load data
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
+geoData.features.forEach((g) => {
+    // coordinates are inside out, so reverse them
+    g.geometry.coordinates[0] = g.geometry.coordinates[0].reverse()
+})
 
 // basic data
 const months = getMonths();
 const categories = getCategories();
 ```
-## Map
-```html
-<div id="legend"></div>
 
+
+## De dataset
+
+```js
+const showParkCrimes = Inputs.checkbox([""], {label: "Toon parkeer overtredingen:"});
+let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().split();
+const cats = categoricalCrimes.keys;
+const values = categoricalCrimes.values
+categoricalCrimes = cats.map((item, idx) => {
+    return{
+        category: item,
+        value: values[idx]
+    }
+});
 ```
+
+```js
+const getCategoryPlot = (width) => Plot.plot({
+    marginBottom: 100,
+    marginLeft: 70,
+    width: width,
+    tip: true,
+    x: {label: "Categorie", tickRotate: -20},
+    y: {label: "Aantal misdrijven", grid:true},
+    marks: [
+        Plot.barY(categoricalCrimes, {x: "category", y: "value", sort: {x: "-y"}}),
+        Plot.tip(categoricalCrimes, Plot.pointer({x: "category", y: "value"}))
+    ]
+});
+```
+
 ```html
-<div id="map_div"></div>
+<div class="grid grid-cols-3">
+  <div class="grid-colspan-1">
+        <p>
+            Sinds 2018 maakt Stad Gent criminaliteitscijfers beschikbaar. Voor elke maand geeft de dataset het aantal misdrijven in elke wijk voor de gegeven categorieën.
+        </p>
+        <p>
+            In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
+        </p>
+        <p>
+            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen.
+        </p>
+  </div>
+  <div class="grid-colspan-2">
+        ${showParkCrimes}
+        ${resize((width) => getCategoryPlot(width))}
+  </div>
+</div>
+```
+## Misdrijven per wijk
+Groot Gent bestaat uit 25 wijken, zoals te zien is op de onderstaande kaart.
+```js
+const crimes = new Query(crimeData).groupByRegion().getTotal().split();
+geoData.features.forEach((g) => {
+    // add crimes 
+    const index = crimes.keys.indexOf(g.properties.name);
+    g.properties.crimes = crimes.values[index];
+})
+```
+
+```js show
+const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
 ```
 ```js
-const gentSVG = cityMap(geoData,crimeData)
-display(gentSVG.node())
-
+Plot.plot({
+    projection: {
+        type: "mercator",
+        n:800,
+        domain: mapScope,
+    },
+    color: {
+        n:4,
+        scheme: "blues",
+        label: "Misdrijven per wijk",
+        legend: true
+    },
+    marks: [
+        Plot.geo(geoData.features, { fill: (d) => d.properties.crimes}), // fill
+        Plot.geo(geoData.features), // edges
+        Plot.tip(geoData.features, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
+    ]
+})
 ```
+
+
+
+
+## TODO: add selectors here to select year/period/etc 
+if the data object is modified all further graphs will change
+We will do this via a map.
 
 
 ## Line chart
