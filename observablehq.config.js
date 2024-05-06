@@ -2,6 +2,8 @@
 export default {
   // The project’s title; used in the sidebar and webpage titles.
   title: "dv24-2",
+  sidebar: false,
+  theme: ["air", "slate"],
 
   // The pages and sections in the sidebar. If you don’t specify this option,
   // all pages will be listed in alphabetical order. Listing pages explicitly
