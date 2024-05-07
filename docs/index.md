@@ -92,7 +92,6 @@ display(gentSVG.node())
 
 ```
 
-
 ## Line chart
 
 ```js

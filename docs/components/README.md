@@ -54,7 +54,7 @@ const crimeData = await loadCrimeData();
 const crimeQuery = new Query(crimeData);
 console.log(crimeQuery);
 
-> Query {data: JSONArray(28364), _final: false} // Query object that is the start of the query.
+> Query {data: JSONArray(27740), _final: false} // Query object that is the start of the query.
 ```
 
 ### groupByRegion()
@@ -79,10 +79,10 @@ const queryResult = new Query(crimeData).groupByRegion().result();
 console.log(queryResult);
 
 > JSONObject { // JSONObject with every array only including entries from the corresponding region.
- "Muide - Meulestede - Afrikalaan" : JSONArray(1090)[Object, Object, Object, …], 
- "Binnenstad": JSONArray(1102)[Object, Object, Object, …],
- "Bloemekenswijk": JSONArray(1092)[Object, Object, Object, …],
- "Drongen": JSONArray(1088)[Object, Object, Object, …],
+ "Muide - Meulestede - Afrikalaan" : JSONArray(1066)[Object, Object, Object, …], 
+ "Binnenstad": JSONArray(1078)[Object, Object, Object, …],
+ "Bloemekenswijk": JSONArray(1068)[Object, Object, Object, …],
+ "Drongen": JSONArray(1064)[Object, Object, Object, …],
  … more
 }
 ```
@@ -110,9 +110,9 @@ console.log(queryResult);
 
 > JSONObject { // JSONObject with every array only including entries from the corresponding category.
  "Diefstal gewapenderhand" : JSONArray(1768)[Object, Object, Object, …], 
- "Diefstal met geweld zonder wapen": JSONArray(1768)[Object, Object, Object, …],
+ "Diefstal met geweld zonder wapen": JSONArray(1769)[Object, Object, Object, …],
  "Geluidshinder": JSONArray(1768)[Object, Object, Object, …],
- "Sluikstorten": JSONArray(1768)[Object, Object, Object, …],
+ "Sluikstorten": JSONArray(1771)[Object, Object, Object, …],
  … more
 }
 ```
@@ -139,8 +139,8 @@ const queryResult = new Query(crimeData).groupByYear().result();
 console.log(queryResult);
 
 > JSONObject { // JSONObject with every array only including entries from the corresponding year.
- "2018" : JSONArray(4992)[Object, Object, Object, …],
- "2019" : JSONArray(4992)[Object, Object, Object, …],
+ "2018" : JSONArray(4680)[Object, Object, Object, …],
+ "2019" : JSONArray(4680)[Object, Object, Object, …],
  "2020" : JSONArray(4992)[Object, Object, Object, …],
  "2021" : JSONArray(4992)[Object, Object, Object, …],
  "2022" : JSONArray(4992)[Object, Object, Object, …],
@@ -170,10 +170,10 @@ const queryResult = new Query(crimeData).groupByMonth().result();
 console.log(queryResult);
 
 > JSONObject { // JSONObject with every array only including entries from the corresponding month.
- "januari" : JSONArray(2500)[Object, Object, Object, …],
- "februari" : JSONArray(2502)[Object, Object, Object, …],
- "maart" : JSONArray(2505)[Object, Object, Object, …],
- "april" : JSONArray(2514)[Object, Object, Object, …],
+ "januari" : JSONArray(2448)[Object, Object, Object, …],
+ "februari" : JSONArray(2450)[Object, Object, Object, …],
+ "maart" : JSONArray(2453)[Object, Object, Object, …],
+ "april" : JSONArray(2462)[Object, Object, Object, …],
  … more
 }
 ```
@@ -201,7 +201,7 @@ const crimeData = await loadCrimeData();
 const queryResult = new Query(crimeData).filterByRegion("Drongen").result();
 console.log(queryResult);
 
-> JSONArray(1088) [ // JSONArray with only the entries from the filtered region (Drongen).
+> JSONArray(1064) [ // JSONArray with only the entries from the filtered region (Drongen).
  JSONObject{"year":…, "month":…, "category":…, "region":"Drongen", …},
  JSONObject{"year":…, "month":…, "category":…, "region":"Drongen", …},
  JSONObject{"year":…, "month":…, "category":…, "region":"Drongen", …},
@@ -297,7 +297,7 @@ const crimeData = await loadCrimeData();
 const queryResult = new Query(crimeData).filterByMonth("maart").result();
 console.log(queryResult);
 
-> JSONArray(2505) [ // JSONArray with only the entries from the filtered month (maart).
+> JSONArray(2453) [ // JSONArray with only the entries from the filtered month (maart).
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
@@ -329,7 +329,7 @@ const queryResult = new Query(crimeData).filterBy((obj) =>
 ).result();
 console.log(queryResult);
 
-> JSONArray(25545) [ // JSONArray without the entries that match the filter function (geen Parkeerovertredingen & geen entries uit de binnenstad).
+> JSONArray(24945) [ // JSONArray without the entries that match the filter function (geen Parkeerovertredingen & geen entries uit de binnenstad).
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
@@ -359,7 +359,7 @@ const crimeData = await loadCrimeData();
 const queryResult = new Query(crimeData).filterMin().result();
 console.log(queryResult);
 
-> JSONArray(13951) [ // JSONArray with only the entries with the lowest total (0).
+> JSONArray(13327) [ // JSONArray with only the entries with the lowest total (0).
  JSONObject{"year":…, "month":…, "category":…, "region":…, "total":0, …},
  JSONObject{"year":…, "month":…, "category":…, "region":…, "total":0, …},
  JSONObject{"year":…, "month":…, "category":…, "region":…, "total":0, …},
@@ -447,10 +447,10 @@ import {loadCrimeData} from "./data/crimes/crimeData.js";
 import {Query} from "./components/queries.js";
 
 const crimeData = await loadCrimeData();
-const queryResult = new Query(crimeData).getTotal().result();
+const queryResult = new Query(crimeData).getCount().result();
 console.log(queryResult);
 
-> 28364 // The total amount of entries in the database.
+> 27740 // The total amount of entries in the database.
 ```
 
 ### getAverage()
@@ -476,7 +476,7 @@ const crimeData = await loadCrimeData();
 const queryResult = new Query(crimeData).getAverage().result();
 console.log(queryResult);
 
-> 6.655866591453956 // The average amount of crimes per entry in the database.
+> 6.805587599134824 // The average amount of crimes per entry in the database.
 ```
 
 ### split()
@@ -564,10 +564,10 @@ const queryResult = new Query(crimeData).groupByYear().groupByMonth().aggregate(
 console.log(queryResult);
 
 > JSONObject { // JSONObject with every array only including entries from the corresponding year and month given as a single key.
- "2018 - januari" : JSONArray(416)[Object, Object, Object, …],
- "2018 - februari" : JSONArray(416)[Object, Object, Object, …],
- "2018 - maart" : JSONArray(416)[Object, Object, Object, …],
- "2018 - april" : JSONArray(416)[Object, Object, Object, …],
+ "2018 - januari" : JSONArray(390)[Object, Object, Object, …],
+ "2018 - februari" : JSONArray(390)[Object, Object, Object, …],
+ "2018 - maart" : JSONArray(390)[Object, Object, Object, …],
+ "2018 - april" : JSONArray(390)[Object, Object, Object, …],
  … more
 }
 
@@ -605,7 +605,7 @@ const crimeData = await loadCrimeData();
 const queryResult = new Query(crimeData).groupByYear().select(2018).result();
 console.log(queryResult);
 
-> JSONArray(4992) [ // JSONArray with only the entries from the selected year (2018).
+> JSONArray(4680) [ // JSONArray with only the entries from the selected year (2018).
  JSONObject{"year":"2018", "month":…, "category":…, "region":…, …},
  JSONObject{"year":"2018", "month":…, "category":…, "region":…, …},
  JSONObject{"year":"2018", "month":…, "category":…, "region":…, …},
@@ -639,7 +639,7 @@ const queryResult = new Query(crimeData).groupByYear().selectMultiple(["2019", "
 console.log(queryResult);
 
 > JSONObject { // JSONObject with only the entries from the selected years (2019 & 2020).
-    "2019" : JSONArray(4992),
+    "2019" : JSONArray(4680),
     "2020" : JSONArray(4992),
 }
 ```
@@ -668,9 +668,9 @@ console.log(queryResult);
 
 > JSONObject { // JSONObject without the ignored entry (Parkeerovertredingen).
  "Diefstal gewapenderhand" : JSONArray(1768)[Object, Object, Object, …],
- "Diefstal met geweld zonder wapen": JSONArray(1768)[Object, Object, Object, …],
+ "Diefstal met geweld zonder wapen": JSONArray(1769)[Object, Object, Object, …],
  "Geluidshinder": JSONArray(1768)[Object, Object, Object, …],
- "Sluikstorten": JSONArray(1768)[Object, Object, Object, …],
+ "Sluikstorten": JSONArray(1771)[Object, Object, Object, …],
  … more
 }
 ```
@@ -697,11 +697,11 @@ const crimeData = await loadCrimeData();
 const queryResult = new Query(crimeData).groupByCategory().deleteMultiple(["Parkeerovertredingen", "Fietsdiefstal"]).result();
 console.log(queryResult);
 
-> JSONObject { // JSONObject without the ignored entries (Parkeerovertredingen & Fietsdiefstallen).
+> JSONObject { // JSONObject without the ignored entry (Parkeerovertredingen).
  "Diefstal gewapenderhand" : JSONArray(1768)[Object, Object, Object, …],
- "Diefstal met geweld zonder wapen": JSONArray(1768)[Object, Object, Object, …],
+ "Diefstal met geweld zonder wapen": JSONArray(1769)[Object, Object, Object, …],
  "Geluidshinder": JSONArray(1768)[Object, Object, Object, …],
- "Sluikstorten": JSONArray(1768)[Object, Object, Object, …],
+ "Sluikstorten": JSONArray(1771)[Object, Object, Object, …],
  … more
 }
 ```
@@ -777,7 +777,6 @@ Returns a list of all the crime categories in the dataset. The complete list is 
 | Sluikstorten                              |
 | Woninginbraak                             |
 | Zakkenrollerij                            |
-| Verkeerongevallen met lichamelijk letsel  |
 | Fietsdiefstal                             |
 | Motordiefstal                             |
 | Parkeerovertredingen                      |

@@ -486,7 +486,6 @@ export function getCategories() {
        "Sluikstorten",
        "Woninginbraak",
        "Zakkenrollerij",
-       "Verkeerongevallen met lichamelijk letsel",
        "Fietsdiefstal",
        "Motordiefstal",
        "Parkeerovertredingen",
