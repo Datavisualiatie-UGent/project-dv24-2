@@ -79,6 +79,7 @@ geoData.features.forEach((g) => {
 
 // basic data
 const months = getMonths();
+const years = getYears();
 const categories = getCategories();
 ```
 
@@ -133,24 +134,58 @@ const getCategoryPlot = (width) => Plot.plot({
 </div>
 ```
 ## Misdrijven per wijk
-Groot Gent bestaat uit 25 wijken, zoals te zien is op de onderstaande kaart.
+
+```js show
+const dates = [];
+for(let year of years){
+    for(let month of months){
+        dates.push(year + "-" + month);
+    }
+}
+```
+
 ```js
+// make input for the dates
+const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " "});
+const dateIdx = Generators.input(dateInput);
+```
+
+```js
+const parkInput = Inputs.toggle({label: "Toon parkeer overtredingen"})
+const showPark = Generators.input(parkInput);
+const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap"})
+const showCumulative = Generators.input(cumulativeInput);
+```
+
+```js
+const split = dates[dateIdx].split("-");
+const selectedYear = parseInt(split[0]);
+const selectedMonth = split[1];
+const dateStr = selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1) + " " + selectedYear;
+```
+
+```js
+d3.select(dateInput)
+    .selectAll("input[type='number']")
+    .remove(); // use d3 to remove number box
+d3.select(dateInput)
+    .selectAll("label")
+    .html(dateStr); // Replace label with value
+```
+
+```js
+// The map
 const crimes = new Query(crimeData).groupByRegion().getTotal().split();
 geoData.features.forEach((g) => {
     // add crimes 
     const index = crimes.keys.indexOf(g.properties.name);
     g.properties.crimes = crimes.values[index];
 })
-```
-
-```js show
 const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
-```
-```js
-Plot.plot({
+const getMapPlot = (width) => Plot.plot({
+    width: width,
     projection: {
         type: "mercator",
-        n:800,
         domain: mapScope,
     },
     color: {
@@ -168,7 +203,31 @@ Plot.plot({
 ```
 
 
-
+```html
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-1">
+        <p>
+            Groot Gent bestaat uit 25 wijken, zoals te zien is op de kaart rechts.
+        </p>
+        <p>
+            Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Ook hier is het interessant om de visualisatie te bekijken zonder
+            de parkeerovertredingen.
+        </p>
+        <p>
+            We kunnen de slider gebruiken om de misdrijven te visualiseren doorheen de tijd. Dit zowel cummulatief, of exact voor een gegeven maand.    
+        </p>
+    </div>
+    
+    <div class="grid-colspan-2 grid-rowspan-2">
+        ${resize((width) => getMapPlot(width))}
+    </div>
+    <div>
+        ${parkInput}
+        ${cumulativeInput}
+        ${dateInput}
+    </div>
+</div>
+```
 
 ## TODO: add selectors here to select year/period/etc 
 if the data object is modified all further graphs will change
@@ -191,16 +250,7 @@ const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYe
 
 display(lineChart(resultPerMonth, "date", "total"));
 ```
-## Rankings
-```js
-const years = getYears().map(String);
-const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
-const category_parallel = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
-```
 
-```js
-display(parallel(crimeData, year, category_parallel));
-```
 ## Amount of crimes
 We can then take a look at the amount of crimes in each category and in each year.
 
