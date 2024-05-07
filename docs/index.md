@@ -2,53 +2,13 @@
 toc: false
 theme: air
 ---
-<style>
-
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: var(--sans-serif);
-  margin: 4rem 0 8rem;
-  text-wrap: balance;
-  text-align: center;
-}
-
-.hero h1 {
-  margin: 2rem 0;
-  max-width: none;
-  font-size: 14vw;
-  font-weight: 900;
-  line-height: 1;
-  background: linear-gradient(30deg, var(--theme-foreground-focus), currentColor);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero h2 {
-  margin: 0;
-  max-width: 34em;
-  font-size: 20px;
-  font-style: initial;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--theme-foreground-muted);
-}
-
-@media (min-width: 640px) {
-  .hero h1 {
-    font-size: 90px;
-  }
-}
-
-</style>
-
 # Criminaliteitscijfers Gent
 Brent Matthys, Warre Provoost en Mats Van Belle
 ***
 
 Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de [dataset van Criminaliteitscijfers in Gent](https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers) te visualiseren.
+
+Voor de visualisaties maken we voornamelijk gebruik van [observable plot](https://observablehq.com/plot/) en waar nodig vullen we dit aan met [d3](https://d3js.org/).
 ```js
 // imports 
 
@@ -87,7 +47,9 @@ const categories = getCategories();
 ## De dataset
 
 ```js
-const showParkCrimes = Inputs.checkbox([""], {label: "Toon parkeer overtredingen:"});
+const parkInput = Inputs.toggle({label: "Toon parkeer overtredingen"})
+const showPark = Generators.input(parkInput);
+
 let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().split();
 const cats = categoricalCrimes.keys;
 const values = categoricalCrimes.values
@@ -128,7 +90,7 @@ const getCategoryPlot = (width) => Plot.plot({
         </p>
   </div>
   <div class="grid-colspan-2">
-        ${showParkCrimes}
+        ${parkInput}
         ${resize((width) => getCategoryPlot(width))}
   </div>
 </div>
@@ -146,14 +108,14 @@ for(let year of years){
 
 ```js
 // make input for the dates
-const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " "});
+const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " ", value: dates.length - 1});
 const dateIdx = Generators.input(dateInput);
 ```
 
 ```js
 const parkInput = Inputs.toggle({label: "Toon parkeer overtredingen"})
 const showPark = Generators.input(parkInput);
-const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap"})
+const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap", value: true})
 const showCumulative = Generators.input(cumulativeInput);
 ```
 
@@ -175,7 +137,17 @@ d3.select(dateInput)
 
 ```js
 // The map
-const crimes = new Query(crimeData).groupByRegion().getTotal().split();
+let crimes = new Query(crimeData);
+if(!showPark){
+    // TODO remove parkin crime data
+    
+}
+if(showCumulative){
+    // TODO remove all dates after given date
+}else {
+    // TODO remove all dates except given date
+}
+crimes = crimes.groupByRegion().getTotal().split();
 geoData.features.forEach((g) => {
     // add crimes 
     const index = crimes.keys.indexOf(g.properties.name);
@@ -205,9 +177,13 @@ const getMapPlot = (width) => Plot.plot({
 
 ```html
 <div class="grid grid-cols-3">
+
+    <div class="grid-colspan-2 grid-rowspan-2">
+        ${resize((width) => getMapPlot(width))}
+    </div>
     <div class="grid-colspan-1">
         <p>
-            Groot Gent bestaat uit 25 wijken, zoals te zien is op de kaart rechts.
+            Groot Gent bestaat uit 25 wijken, zoals te zien is op de kaart links.
         </p>
         <p>
             Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Ook hier is het interessant om de visualisatie te bekijken zonder
@@ -216,10 +192,6 @@ const getMapPlot = (width) => Plot.plot({
         <p>
             We kunnen de slider gebruiken om de misdrijven te visualiseren doorheen de tijd. Dit zowel cummulatief, of exact voor een gegeven maand.    
         </p>
-    </div>
-    
-    <div class="grid-colspan-2 grid-rowspan-2">
-        ${resize((width) => getMapPlot(width))}
     </div>
     <div>
         ${parkInput}
