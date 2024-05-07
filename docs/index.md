@@ -77,6 +77,7 @@ const geoData = await loadGeometryData();
 const months = getMonths();
 const categories = getCategories();
 ```
+
 ## Map
 ```html
 <div id="legend"></div>
@@ -124,7 +125,7 @@ We can then take a look at the amount of crimes in each category and in each yea
 ```js
 const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
 
-const queryResult = new Query(crimeData).groupByCategory().getTotal().split();
+const queryResult = new Query(crimeData).groupByCategory().deleteMultiple(["Parkeerovertredingen", "Fietsdiefstal"]).getTotal().split();
 
 amountOfCrimesPerCategoryChart.setOption({
   title: {

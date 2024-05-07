@@ -20,6 +20,7 @@ This documentation will provide a detailed overview of all the methods in the qu
 | [filterByCategory()](#filterByCategory) | Filter the query by category.                                         |
 | [filterByYear()](#filterByYear)         | Filter the query by year.                                             |
 | [filterByMonth()](#filterByMonth)       | Filter the query by month.                                            |
+| [filterBy()](#filterBy)                 | Filter the query by a given filter function.                          |
 | [filterMin()](#filterMin)               | Filter the result to only include the entries with the minimum total. |
 | [filterMax()](#filterMax)               | Filter the result to only include the entries with the maximum total. |
 | [getTotal()](#getTotal)                 | Calculate the total amount of crimes.                                 |
@@ -29,6 +30,9 @@ This documentation will provide a detailed overview of all the methods in the qu
 | [result()](#result)                     | Acquire the result of the query.                                      |
 | [aggregate()](#aggregate)               | Aggregate the outer group back into the query result.                 |
 | [select()](#select)                     | Select a single group from the different options in the map.          |
+| [selectMultiple()](#selectMultiple)     | Select multiple groups from the different options in the map.         |
+| [delete()](#delete)                     | Delete a single group from the different options in the map.          |
+| [deleteMultiple()](#deleteMultiple)     | Delete multiple groups from the different options in the map.         |
 | ...                                     | ...                                                                   |
 
 ### Query()
@@ -179,6 +183,7 @@ Filter the query by region.
 
 This means that we only keep the entries where the region matches our given region.
 You can take a look at the different regions [here](#getregions).
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
 
 *This method can handle grouped queries and will filter per group.*
 
@@ -210,6 +215,7 @@ Filter the query by category.
 
 This means that we only keep the entries where the category matches our given category.
 You can take a look at the different categories [here](#getcategories).
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
 
 *This method can handle grouped queries and will filter per group.*
 
@@ -241,6 +247,7 @@ Filter the query by year.
 
 This means that we only keep the entries where the year matches our given year.
 You can take a look at the different years [here](#getyears).
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
 
 *This method can handle grouped queries and will filter per group.*
 
@@ -272,6 +279,7 @@ Filter the query by month.
 
 This means that we only keep the entries where the month matches our given month.
 You can take a look at the different months [here](#getmonths).
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
 
 *This method can handle grouped queries and will filter per group.*
 
@@ -290,6 +298,38 @@ const queryResult = new Query(crimeData).filterByMonth("maart").result();
 console.log(queryResult);
 
 > JSONArray(2505) [ // JSONArray with only the entries from the filtered month (maart).
+ JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
+ JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
+ JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
+ JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
+ … more
+]
+```
+
+### filterBy()
+Filter the query by a given filter function.
+
+This means that we only keep the entries where the objects match those for which the filter function returns true.
+
+*This method can handle grouped queries and will filter per group.*
+
+|                |                                                    |
+|----------------|----------------------------------------------------|
+| **Parameters** | [filter_function: Function (obj: Object) => bool ] |
+| **Returns**    | Query-class                                        |
+
+#### Example
+```js
+import {loadCrimeData} from "./data/crimes/crimeData.js";
+import {Query} from "./components/queries.js";
+
+const crimeData = await loadCrimeData();
+const queryResult = new Query(crimeData).filterBy((obj) =>
+        obj["category"] !== "Parkeerovertredingen" && obj["region"] !== "Binnenstad"
+).result();
+console.log(queryResult);
+
+> JSONArray(25545) [ // JSONArray without the entries that match the filter function (geen Parkeerovertredingen & geen entries uit de binnenstad).
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
  JSONObject{"year":…, "month":"maart", "category":…, "region":…, …},
@@ -544,7 +584,6 @@ console.log(queryResult2);
 ]
 ```
 
-
 ### select()
 Select a single group from the different options in the map.
 
@@ -552,10 +591,10 @@ This is mainly used to end the query when working with aggregated group keys. Se
 
 **This method requires a grouped query and will throw an error otherwise.**
 
-|                |        |
-|----------------|--------|
-| **Parameters** | (none) |
-| **Returns**    | Object |
+|                |            |
+|----------------|------------|
+| **Parameters** | entry: Key |
+| **Returns**    | Object     |
 
 #### Example
 ```js
@@ -575,6 +614,97 @@ console.log(queryResult);
 ]
 ```
 
+### selectMultiple()
+Select multiple groups from the different options in the map.
+
+This is used for when we only want to work with a part of the dataset.
+This does not combine the data back into a single array but only keeps the selected object keys, that way this function also works on doubly-grouped Queries.
+When you want to combine the data back you can take a look at the [aggregate](#aggregate) function. 
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
+
+**This method requires a grouped query and will throw an error otherwise.**
+
+|                |                       |
+|----------------|-----------------------|
+| **Parameters** | entries: Array\<Key\> |
+| **Returns**    | Object                |
+
+#### Example
+```js
+import {loadCrimeData} from "./data/crimes/crimeData.js";
+import {Query} from "./components/queries.js";
+
+const crimeData = await loadCrimeData();
+const queryResult = new Query(crimeData).groupByYear().selectMultiple(["2019", "2020"]).result();
+console.log(queryResult);
+
+> JSONObject { // JSONObject with only the entries from the selected years (2019 & 2020).
+    "2019" : JSONArray(4992),
+    "2020" : JSONArray(4992),
+}
+```
+
+### delete()
+Delete a single group from the different options in the map.
+
+This is mainly used to ignore a group when working with aggregated group keys.
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
+
+**This method requires a grouped query and will throw an error otherwise.**
+
+|                |            |
+|----------------|------------|
+| **Parameters** | entry: Key |
+| **Returns**    | Object     |
+
+#### Example
+```js
+import {loadCrimeData} from "./data/crimes/crimeData.js";
+import {Query} from "./components/queries.js";
+
+const crimeData = await loadCrimeData();
+const queryResult = new Query(crimeData).groupByCategory().delete("Parkeerovertredingen").result();
+console.log(queryResult);
+
+> JSONObject { // JSONObject without the ignored entry (Parkeerovertredingen).
+ "Diefstal gewapenderhand" : JSONArray(1768)[Object, Object, Object, …],
+ "Diefstal met geweld zonder wapen": JSONArray(1768)[Object, Object, Object, …],
+ "Geluidshinder": JSONArray(1768)[Object, Object, Object, …],
+ "Sluikstorten": JSONArray(1768)[Object, Object, Object, …],
+ … more
+}
+```
+
+### deleteMultiple()
+Delete multiple groups from the different options in the map.
+
+This is mainly used to ignore some groups when working with aggregated group keys.
+For more complex filtering options you can also look at the [filterBy](#filterBy) method.
+
+**This method requires a grouped query and will throw an error otherwise.**
+
+|                |                       |
+|----------------|-----------------------|
+| **Parameters** | entries: Array\<Key\> |
+| **Returns**    | Object                |
+
+#### Example
+```js
+import {loadCrimeData} from "./data/crimes/crimeData.js";
+import {Query} from "./components/queries.js";
+
+const crimeData = await loadCrimeData();
+const queryResult = new Query(crimeData).groupByCategory().deleteMultiple(["Parkeerovertredingen", "Fietsdiefstal"]).result();
+console.log(queryResult);
+
+> JSONObject { // JSONObject without the ignored entries (Parkeerovertredingen & Fietsdiefstallen).
+ "Diefstal gewapenderhand" : JSONArray(1768)[Object, Object, Object, …],
+ "Diefstal met geweld zonder wapen": JSONArray(1768)[Object, Object, Object, …],
+ "Geluidshinder": JSONArray(1768)[Object, Object, Object, …],
+ "Sluikstorten": JSONArray(1768)[Object, Object, Object, …],
+ … more
+}
+```
 
 ## get-methods
 The queries.js file includes a few basic and hardcoded get-methods about the specific dataset we are working with. 
