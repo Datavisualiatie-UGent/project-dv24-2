@@ -9,6 +9,7 @@ Brent Matthys, Warre Provoost en Mats Van Belle
 Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de [dataset van Criminaliteitscijfers in Gent](https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers) te visualiseren.
 
 Voor de visualisaties maken we voornamelijk gebruik van [observable plot](https://observablehq.com/plot/) en waar nodig vullen we dit aan met [d3](https://d3js.org/).
+
 ```js
 // imports 
 
@@ -47,8 +48,8 @@ const categories = getCategories();
 ## De dataset
 
 ```js
-const parkInput = Inputs.toggle({label: "Toon parkeer overtredingen"})
-const showPark = Generators.input(parkInput);
+const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen"})
+const showPark_dataset = Generators.input(parkInput_dataset);
 
 let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().split();
 const cats = categoricalCrimes.keys;
@@ -90,7 +91,7 @@ const getCategoryPlot = (width) => Plot.plot({
         </p>
   </div>
   <div class="grid-colspan-2">
-        ${parkInput}
+        ${parkInput_dataset}
         ${resize((width) => getCategoryPlot(width))}
   </div>
 </div>
@@ -107,16 +108,23 @@ for(let year of years){
 ```
 
 ```js
-// make input for the dates
+// Map inputs
 const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " ", value: dates.length - 1});
 const dateIdx = Generators.input(dateInput);
-```
 
-```js
-const parkInput = Inputs.toggle({label: "Toon parkeer overtredingen"})
-const showPark = Generators.input(parkInput);
-const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap", value: true})
+const parkInput_mainMap = Inputs.toggle({label: "Toon parkeer overtredingen"});
+const showPark_mainMap = Generators.input(parkInput_mainMap);
+
+const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap", value: true});
 const showCumulative = Generators.input(cumulativeInput);
+
+const scaleInput = Inputs.toggle({label: "Gebruik logaritmische schaal", value: true});
+const logScale = Generators.input(scaleInput);
+
+const mapCrimeCats = ["Alle misdrijven"]
+mapCrimeCats.push(...categories)
+const categoryInput = Inputs.select(mapCrimeCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
+const categoryValue = Generators.input(categoryInput);
 ```
 
 ```js
@@ -138,7 +146,10 @@ d3.select(dateInput)
 ```js
 // The map
 let crimes = new Query(crimeData);
-if(!showPark){
+if(categoryValue !== "Alle misdrijven"){
+    crimes = crimes.filterByCategory(categoryValue);
+}
+if(!showPark_mainMap){
     // TODO remove parkin crime data
     
 }
@@ -161,6 +172,7 @@ const getMapPlot = (width) => Plot.plot({
         domain: mapScope,
     },
     color: {
+        type: logScale ? "log" : "linear",
         n:4,
         scheme: "blues",
         label: "Misdrijven per wijk",
@@ -174,7 +186,6 @@ const getMapPlot = (width) => Plot.plot({
 })
 ```
 
-
 ```html
 <div class="grid grid-cols-3">
 
@@ -186,24 +197,23 @@ const getMapPlot = (width) => Plot.plot({
             Groot Gent bestaat uit 25 wijken, zoals te zien is op de kaart links.
         </p>
         <p>
-            Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Ook hier is het interessant om de visualisatie te bekijken zonder
-            de parkeerovertredingen.
+            Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Zelfs wanneer we de parkeerovertredingen niet in rekening brengen zien we dat
+            criminaliteit het hoogst ligt in het centrum van de stad. Voor deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
         </p>
         <p>
             We kunnen de slider gebruiken om de misdrijven te visualiseren doorheen de tijd. Dit zowel cummulatief, of exact voor een gegeven maand.    
         </p>
     </div>
     <div>
-        ${parkInput}
+        ${parkInput_mainMap}
+        ${scaleInput}
         ${cumulativeInput}
         ${dateInput}
+        ${categoryInput}
     </div>
 </div>
 ```
 
-## TODO: add selectors here to select year/period/etc 
-if the data object is modified all further graphs will change
-We will do this via a map.
 
 
 ## Line chart
@@ -345,3 +355,7 @@ amountOfCrimesPerYear.setOption({
 });
 ```
 
+## Gentse feesten
+TODO
+## Covid
+TODO
