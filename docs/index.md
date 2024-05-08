@@ -22,6 +22,7 @@ import {cityNj, cityMap} from "./components/cityMap.js"
 import {lineChart} from "./components/lineChart.js"
 import {parallel} from "./components/parallel.js"
 import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
+import {mapPlot} from "./components/mapPlot.js"
 
 // misc
 import * as echarts from "npm:echarts";
@@ -144,10 +145,6 @@ d3.select(dateInput)
 
 ```js
 // The map
-let crimes = new Query(crimeData);
-if(categoryValue !== "Alle misdrijven"){
-    crimes = crimes.filterByCategory(categoryValue);
-}
 if(!showPark_mainMap){
     // TODO remove parkin crime data
     
@@ -157,32 +154,8 @@ if(showCumulative){
 }else {
     // TODO remove all dates except given date
 }
-crimes = crimes.groupByRegion().getTotal().split();
-geoData.features.forEach((g) => {
-    // add crimes 
-    const index = crimes.keys.indexOf(g.properties.name);
-    g.properties.crimes = crimes.values[index];
-})
 const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
-const getMapPlot = (width) => Plot.plot({
-    width: width,
-    projection: {
-        type: "mercator",
-        domain: mapScope,
-    },
-    color: {
-        type: logScale ? "log" : "linear",
-        n:4,
-        scheme: "blues",
-        label: "Misdrijven per wijk",
-        legend: true
-    },
-    marks: [
-        Plot.geo(geoData.features, { fill: (d) => d.properties.crimes}), // fill
-        Plot.geo(geoData.features), // edges
-        Plot.tip(geoData.features, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
-    ]
-})
+const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale)
 ```
 
 ```html
@@ -229,6 +202,10 @@ const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYe
 }).getTotal().aggregate("date").result();
 
 display(lineChart(resultPerMonth, "date", "total"));
+```
+
+```js
+const lightCrimes = []
 ```
 
 ## Amount of crimes
