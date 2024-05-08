@@ -21,7 +21,7 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 import {cityNj, cityMap} from "./components/cityMap.js"
 import {lineChart} from "./components/lineChart.js"
 import {parallel} from "./components/parallel.js"
-import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
+import {Query, getMonths, getYears, getCategories, getLightCategories, getMediumCategories, getSevereCategories} from "./components/queries.js";
 import {mapPlot} from "./components/mapPlot.js"
 
 // misc
@@ -154,7 +154,6 @@ if(showCumulative){
 }else {
     // TODO remove all dates except given date
 }
-const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
 const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale)
 ```
 
@@ -202,10 +201,6 @@ const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYe
 }).getTotal().aggregate("date").result();
 
 display(lineChart(resultPerMonth, "date", "total"));
-```
-
-```js
-const lightCrimes = []
 ```
 
 ## Amount of crimes
@@ -331,6 +326,31 @@ amountOfCrimesPerYear.setOption({
 ```
 
 ## De ernst van misdrijven
+```js
+let mapLight = mapPlot(crimeData, geoData, getLightCategories(),true)
+```
+```js
+let mapMedium = mapPlot(crimeData, geoData, getMediumCategories(),true)
+```
+```js 
+let mapHeavy = mapPlot(crimeData, geoData, getSevereCategories(),true)
+```
+
+```html
+<div class="grid grid-cols-3">
+
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapLight(width))}
+    </div>
+      <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapMedium(width))}
+    </div>
+      <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapHeavy(width))}
+    </div>
+  
+</div>
+```
 TODO
 ## Gentse feesten
 TODO

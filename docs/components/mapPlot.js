@@ -14,13 +14,15 @@ export function mapPlot(crimeData, geoData, crimeCategories, logScale){
 
     let crimes = new Query(crimeData);
     if(Array.isArray(crimeCategories)){
-        // code to execute if crimeCategories is a list
         crimes = crimes.filterByCategories(crimeCategories);
     }
     else if(crimeCategories !== "Alle misdrijven"){
         crimes = crimes.filterByCategory(crimeCategories);
     }
     crimes = crimes.groupByRegion().getTotal().split();
+    console.log("crimes", crimes)
+
+
     geoData.features.forEach((g) => {
         // add crimes 
         const index = crimes.keys.indexOf(g.properties.name);
