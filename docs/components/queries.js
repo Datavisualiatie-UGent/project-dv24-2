@@ -115,7 +115,7 @@ export class Query
             for (const [key, value] of Object.entries(this.data)) {
                 returnedObject[key] = new Query(value).filterByRegion(region).data;
             }
-            return new Query(returnedObject, true);
+            return new Query(returnedObject);
         } else {
             return this.groupByRegion().select(region);
         }
@@ -135,7 +135,7 @@ export class Query
             for (const [key, value] of Object.entries(this.data)) {
                 returnedObject[key] = new Query(value).filterByCategory(category).data;
             }
-            return new Query(returnedObject, true);
+            return new Query(returnedObject);
         } else {
             return this.groupByCategory().select(category);
         }
@@ -155,7 +155,7 @@ export class Query
             for (const [key, value] of Object.entries(this.data)) {
                 returnedObject[key] = new Query(value).filterByYear(year).data;
             }
-            return new Query(returnedObject, true);
+            return new Query(returnedObject);
         } else {
             return this.groupByYear().select(year);
         }
@@ -175,9 +175,30 @@ export class Query
             for (const [key, value] of Object.entries(this.data)) {
                 returnedObject[key] = new Query(value).filterByMonth(month).data;
             }
-            return new Query(returnedObject, true);
+            return new Query(returnedObject);
         } else {
             return this.groupByMonth().select(month);
+        }
+    }
+
+    /**
+     * Filter the objects using the given filter function.
+     */
+    filterBy(filter_func) {
+        if (filter_func === null) {
+            return this;
+        }
+        if (this._final)
+            throw "QueryError: the query is already finalized, can not filter the entries anymore."
+        if (!Array.isArray(this.data)) {
+            let returnedObject = {};
+            for (const [key, value] of Object.entries(this.data)) {
+                returnedObject[key] = new Query(value).filterBy(filter_func).data;
+            }
+            return new Query(returnedObject);
+        } else {
+            let new_data = this.data.filter(filter_func);
+            return new Query(new_data);
         }
     }
 
@@ -373,6 +394,51 @@ export class Query
         }
     }
 
+    /**
+     * Select multiple groups from the different options in the map.
+     */
+    selectMultiple(entries) {
+        try {
+            let new_data = Object.assign({}, this.data);
+            for (const key of Object.keys(this.data)) {
+                if (entries.indexOf(key) === -1) {
+                    delete new_data[key];
+                }
+            }
+            return new Query(new_data);
+        } catch (e) {
+            throw "QueryError: cannot select entry due to a wrong key or because this is a non-grouped query."
+        }
+    }
+
+    /**
+     * Delete a single group from the different options in the map.
+     */
+    delete(entry) {
+        try {
+            let new_data = Object.assign({}, this.data);
+            delete new_data[entry];
+            return new Query(new_data);
+        } catch (e) {
+            throw "QueryError: cannot delete entry due to a wrong key or because this is a non-grouped query."
+        }
+    }
+
+    /**
+     * Delete multiple groups from the different options in the map.
+     */
+    deleteMultiple(entries) {
+        try {
+            let new_data = Object.assign({}, this.data);
+            for (const entry of entries) {
+                delete new_data[entry];
+            }
+            return new Query(new_data);
+        } catch (e) {
+            throw "QueryError: cannot delete entry due to a wrong key or because this is a non-grouped query."
+        }
+    }
+
 }
 
 /**
@@ -420,7 +486,6 @@ export function getCategories() {
        "Sluikstorten",
        "Woninginbraak",
        "Zakkenrollerij",
-       "Verkeerongevallen met lichamelijk letsel",
        "Fietsdiefstal",
        "Motordiefstal",
        "Parkeerovertredingen",
