@@ -47,10 +47,17 @@ const categories = getCategories();
 ## De dataset
 
 ```js
-const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen"})
+const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen", value: true})
 const showPark_dataset = Generators.input(parkInput_dataset);
+```
 
-let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().split();
+```js
+
+let categoricalCrimes = new Query(crimeData).groupByCategory();
+if(!showPark_dataset){
+    categoricalCrimes = categoricalCrimes.delete("Parkeerovertredingen");
+}
+categoricalCrimes = categoricalCrimes.getTotal().split();
 const cats = categoricalCrimes.keys;
 const values = categoricalCrimes.values
 categoricalCrimes = cats.map((item, idx) => {
@@ -60,6 +67,7 @@ categoricalCrimes = cats.map((item, idx) => {
     }
 });
 ```
+
 
 ```js
 const getCategoryPlot = (width) => Plot.plot({
