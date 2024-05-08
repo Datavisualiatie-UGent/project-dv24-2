@@ -1,54 +1,14 @@
 ---
 toc: false
+theme: air
 ---
+# Criminaliteitscijfers Gent
+Brent Matthys, Warre Provoost en Mats Van Belle
+***
 
-<style>
+Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de [dataset van Criminaliteitscijfers in Gent](https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers) te visualiseren.
 
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: var(--sans-serif);
-  margin: 4rem 0 8rem;
-  text-wrap: balance;
-  text-align: center;
-}
-
-.hero h1 {
-  margin: 2rem 0;
-  max-width: none;
-  font-size: 14vw;
-  font-weight: 900;
-  line-height: 1;
-  background: linear-gradient(30deg, var(--theme-foreground-focus), currentColor);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero h2 {
-  margin: 0;
-  max-width: 34em;
-  font-size: 20px;
-  font-style: initial;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--theme-foreground-muted);
-}
-
-@media (min-width: 640px) {
-  .hero h1 {
-    font-size: 90px;
-  }
-}
-
-</style>
-
-# Datavisualisatie
-
-## TODO: add selectors here to select year/period/etc 
-if the data object is modified all further graphs will change
-We will do this via a map.
+Voor de visualisaties maken we voornamelijk gebruik van [observable plot](https://observablehq.com/plot/) en waar nodig vullen we dit aan met [d3](https://d3js.org/).
 
 ```js
 // imports 
@@ -66,31 +26,193 @@ import {Query, getMonths, getYears, getCategories} from "./components/queries.js
 // misc
 import * as echarts from "npm:echarts";
 import {svg} from "npm:htl";
+import * as d3 from "npm:d3";
 ```
 
 ```js
 // load data
 const crimeData = await loadCrimeData();
 const geoData = await loadGeometryData();
+geoData.features.forEach((g) => {
+    // coordinates are inside out, so reverse them
+    g.geometry.coordinates[0] = g.geometry.coordinates[0].reverse()
+})
 
 // basic data
 const months = getMonths();
+const years = getYears();
 const categories = getCategories();
 ```
 
-## Map
-```html
-<div id="legend"></div>
+## De dataset
 
-```
-```html
-<div id="map_div"></div>
-```
 ```js
-const gentSVG = cityMap(geoData,crimeData)
-display(gentSVG.node())
+const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen"})
+const showPark_dataset = Generators.input(parkInput_dataset);
 
+let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().split();
+const cats = categoricalCrimes.keys;
+const values = categoricalCrimes.values
+categoricalCrimes = cats.map((item, idx) => {
+    return{
+        category: item,
+        value: values[idx]
+    }
+});
 ```
+
+```js
+const getCategoryPlot = (width) => Plot.plot({
+    marginBottom: 100,
+    marginLeft: 70,
+    width: width,
+    tip: true,
+    x: {label: "Categorie", tickRotate: -20},
+    y: {label: "Aantal misdrijven", grid:true},
+    marks: [
+        Plot.barY(categoricalCrimes, {x: "category", y: "value", sort: {x: "-y"}}),
+        Plot.tip(categoricalCrimes, Plot.pointer({x: "category", y: "value"}))
+    ]
+});
+```
+
+```html
+<div class="grid grid-cols-3">
+  <div class="grid-colspan-1">
+        <p>
+            Sinds 2018 maakt Stad Gent criminaliteitscijfers beschikbaar. Voor elke maand geeft de dataset het aantal misdrijven in elke wijk voor de gegeven categorieën.
+        </p>
+        <p>
+            In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
+        </p>
+        <p>
+            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen.
+        </p>
+  </div>
+  <div class="grid-colspan-2">
+        ${parkInput_dataset}
+        ${resize((width) => getCategoryPlot(width))}
+  </div>
+</div>
+```
+## Misdrijven per wijk
+
+```js show
+const dates = [];
+for(let year of years){
+    for(let month of months){
+        dates.push(year + "-" + month);
+    }
+}
+```
+
+```js
+// Map inputs
+const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " ", value: dates.length - 1});
+const dateIdx = Generators.input(dateInput);
+
+const parkInput_mainMap = Inputs.toggle({label: "Toon parkeer overtredingen"});
+const showPark_mainMap = Generators.input(parkInput_mainMap);
+
+const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap", value: true});
+const showCumulative = Generators.input(cumulativeInput);
+
+const scaleInput = Inputs.toggle({label: "Gebruik logaritmische schaal", value: true});
+const logScale = Generators.input(scaleInput);
+
+const mapCrimeCats = ["Alle misdrijven"]
+mapCrimeCats.push(...categories)
+const categoryInput = Inputs.select(mapCrimeCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
+const categoryValue = Generators.input(categoryInput);
+```
+
+```js
+const split = dates[dateIdx].split("-");
+const selectedYear = parseInt(split[0]);
+const selectedMonth = split[1];
+const dateStr = selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1) + " " + selectedYear;
+```
+
+```js
+d3.select(dateInput)
+    .selectAll("input[type='number']")
+    .remove(); // use d3 to remove number box
+d3.select(dateInput)
+    .selectAll("label")
+    .html(dateStr); // Replace label with value
+```
+
+```js
+// The map
+let crimes = new Query(crimeData);
+if(categoryValue !== "Alle misdrijven"){
+    crimes = crimes.filterByCategory(categoryValue);
+}
+if(!showPark_mainMap){
+    // TODO remove parkin crime data
+    
+}
+if(showCumulative){
+    // TODO remove all dates after given date
+}else {
+    // TODO remove all dates except given date
+}
+crimes = crimes.groupByRegion().getTotal().split();
+geoData.features.forEach((g) => {
+    // add crimes 
+    const index = crimes.keys.indexOf(g.properties.name);
+    g.properties.crimes = crimes.values[index];
+})
+const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
+const getMapPlot = (width) => Plot.plot({
+    width: width,
+    projection: {
+        type: "mercator",
+        domain: mapScope,
+    },
+    color: {
+        type: logScale ? "log" : "linear",
+        n:4,
+        scheme: "blues",
+        label: "Misdrijven per wijk",
+        legend: true
+    },
+    marks: [
+        Plot.geo(geoData.features, { fill: (d) => d.properties.crimes}), // fill
+        Plot.geo(geoData.features), // edges
+        Plot.tip(geoData.features, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
+    ]
+})
+```
+
+```html
+<div class="grid grid-cols-3">
+
+    <div class="grid-colspan-2 grid-rowspan-2">
+        ${resize((width) => getMapPlot(width))}
+    </div>
+    <div class="grid-colspan-1">
+        <p>
+            Groot Gent bestaat uit 25 wijken, zoals te zien is op de kaart links.
+        </p>
+        <p>
+            Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Zelfs wanneer we de parkeerovertredingen niet in rekening brengen zien we dat
+            criminaliteit het hoogst ligt in het centrum van de stad. Voor deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
+        </p>
+        <p>
+            We kunnen de slider gebruiken om de misdrijven te visualiseren doorheen de tijd. Dit zowel cummulatief, of exact voor een gegeven maand.    
+        </p>
+    </div>
+    <div>
+        ${parkInput_mainMap}
+        ${scaleInput}
+        ${cumulativeInput}
+        ${dateInput}
+        ${categoryInput}
+    </div>
+</div>
+```
+
 
 ## Line chart
 
@@ -108,16 +230,7 @@ const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYe
 
 display(lineChart(resultPerMonth, "date", "total"));
 ```
-## Rankings
-```js
-const years = getYears().map(String);
-const year = view(Inputs.select(years, {value: "2018", label: "Selecteer jaar:"}));
-const category_parallel = view(Inputs.select(categories, {value: "Graffiti", label: "Selecteer categorie:"}));
-```
 
-```js
-display(parallel(crimeData, year, category_parallel));
-```
 ## Amount of crimes
 We can then take a look at the amount of crimes in each category and in each year.
 
@@ -240,3 +353,9 @@ amountOfCrimesPerYear.setOption({
 });
 ```
 
+## De ernst van misdrijven
+TODO
+## Gentse feesten
+TODO
+## Covid
+TODO
