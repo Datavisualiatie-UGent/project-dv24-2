@@ -355,6 +355,8 @@ amountOfCrimesPerYear.setOption({
 });
 ```
 
+## De ernst van misdrijven
+TODO
 ## Gentse feesten
 TODO
 ## Covid
