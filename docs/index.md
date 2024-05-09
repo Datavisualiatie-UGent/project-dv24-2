@@ -154,7 +154,16 @@ if(showCumulative){
 }else {
     // TODO remove all dates except given date
 }
-const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale)
+// calculate the domain
+let crimesDomain = new Query(crimeData);
+
+let totalCrimes = crimesDomain.groupByRegion().getTotal().split();
+
+let minCrimes = Math.min(...totalCrimes.values);
+let maxCrimes = Math.max(...totalCrimes.values);
+
+console.log(minCrimes,maxCrimes)
+const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale,[minCrimes,maxCrimes])
 ```
 
 ```html
@@ -327,13 +336,29 @@ amountOfCrimesPerYear.setOption({
 
 ## De ernst van misdrijven
 ```js
-let mapLight = mapPlot(crimeData, geoData, getLightCategories(),true)
+// create the domain ranges so that all the maps legends are the same
+let minCrimesSeverity = Infinity;
+let maxCrimesSeverity = -Infinity;
+let crimes = new Query(crimeData);
+[getLightCategories(), getMediumCategories(), getSevereCategories()].forEach(categories => {
+    let filteredCrimes = crimes.filterByCategories(categories);
+    let totalCrimes = filteredCrimes.groupByRegion().getTotal().split();
+
+    let categoryMin = Math.min(...totalCrimes.values);
+    let categoryMax = Math.max(...totalCrimes.values);
+
+    minCrimesSeverity = Math.min(minCrimesSeverity, categoryMin);
+    maxCrimesSeverity = Math.max(maxCrimesSeverity, categoryMax);
+});
 ```
 ```js
-let mapMedium = mapPlot(crimeData, geoData, getMediumCategories(),true)
+const mapLight = mapPlot(crimeData, geoData, getLightCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
+```
+```js
+const mapMedium = mapPlot(crimeData, geoData, getMediumCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
 ```
 ```js 
-let mapHeavy = mapPlot(crimeData, geoData, getSevereCategories(),true)
+const mapHeavy = mapPlot(crimeData, geoData, getSevereCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
 ```
 
 ```html

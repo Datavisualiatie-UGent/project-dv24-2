@@ -10,7 +10,7 @@ import * as Plot from "npm:@observablehq/plot";
  * @param logScale
  * @constructor
  */
-export function mapPlot(crimeData, geoData, crimeCategories, logScale){
+export function mapPlot(crimeData, geoData, crimeCategories, logScale, legendDomain){
 
     let crimes = new Query(crimeData);
     if(Array.isArray(crimeCategories)){
@@ -22,8 +22,9 @@ export function mapPlot(crimeData, geoData, crimeCategories, logScale){
     crimes = crimes.groupByRegion().getTotal().split();
     console.log("crimes", crimes)
 
-
-    geoData.features.forEach((g) => {
+    // need to copy the features to avoid changing the original data
+    let featuresCopy = JSON.parse(JSON.stringify(geoData.features));
+    featuresCopy.forEach((g) => {
         // add crimes 
         const index = crimes.keys.indexOf(g.properties.name);
         g.properties.crimes = crimes.values[index];
@@ -37,15 +38,16 @@ export function mapPlot(crimeData, geoData, crimeCategories, logScale){
         },
         color: {
             type: logScale ? "log" : "linear",
+            domain : legendDomain,
             n:4,
             scheme: "blues",
             label: "Misdrijven per wijk",
             legend: true
         },
         marks: [
-            Plot.geo(geoData.features, { fill: (d) => d.properties.crimes}), // fill
-            Plot.geo(geoData.features), // edges
-            Plot.tip(geoData.features, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
+            Plot.geo(featuresCopy, { fill: (d) => d.properties.crimes}), // fill
+            Plot.geo(featuresCopy), // edges
+            Plot.tip(featuresCopy, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
         ]
     })
     return getMapPlot;
