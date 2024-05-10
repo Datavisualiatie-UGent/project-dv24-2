@@ -159,14 +159,14 @@ if(!showPark_mainMap){
 if(categoryValue !== "Alle misdrijven"){
     mapCrimes = mapCrimes.filterByCategory(categoryValue);
 }
-mapCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
 if(showCumulative){
-    console.log(dateIdx + 1)
-    let slice = dates.slice(0, dateIdx + 1)
-    console.log(slice);
-    console.log(mapCrimes);
-    mapCrimes = mapCrimes.selectMultiple(slice);
+    // console.log(dateIdx + 1)
+    // console.log(slice);
+    // console.log(mapCrimes);
+    // let slice = dates.slice(0, dateIdx + 1)
+    // mapCrimes = mapCrimes.selectMultiple(slice);
 }else {
+    mapCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
     mapCrimes = mapCrimes.select(selectedDate);
 }
 
