@@ -20,8 +20,9 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 // components
 import {cityNj, cityMap} from "./components/cityMap.js"
 import {lineChart} from "./components/lineChart.js"
+import {barChart} from "./components/barChart.js"
 import {parallel} from "./components/parallel.js"
-import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
+import {Query, getMonths, getYears, getCategories, getRegions} from "./components/queries.js";
 
 // misc
 import * as echarts from "npm:echarts";
@@ -42,6 +43,11 @@ geoData.features.forEach((g) => {
 const months = getMonths();
 const years = getYears();
 const categories = getCategories();
+const regions = getRegions();
+const categoryDefault = "Alle misdrijven"
+const regionDefault = "Alle regio's"
+const categoryCats = [categoryDefault].concat(categories)
+const regionCats = [regionDefault].concat(regions)
 ```
 
 ## De dataset
@@ -50,30 +56,17 @@ const categories = getCategories();
 const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen"})
 const showPark_dataset = Generators.input(parkInput_dataset);
 
-let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().split();
-const cats = categoricalCrimes.keys;
-const values = categoricalCrimes.values
-categoricalCrimes = cats.map((item, idx) => {
-    return{
-        category: item,
-        value: values[idx]
-    }
-});
+let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().aggregate("category").result();
+let regionCrimes = new Query(crimeData).groupByRegion().getTotal().aggregate("region").result();
+let yearCrimes = new Query(crimeData).groupByYear().getTotal().aggregate("year").result();
+let monthCrimes = new Query(crimeData).groupByMonth().getTotal().aggregate("month").result();
 ```
 
 ```js
-const getCategoryPlot = (width) => Plot.plot({
-    marginBottom: 100,
-    marginLeft: 70,
-    width: width,
-    tip: true,
-    x: {label: "Categorie", tickRotate: -20},
-    y: {label: "Aantal misdrijven", grid:true},
-    marks: [
-        Plot.barY(categoricalCrimes, {x: "category", y: "value", sort: {x: "-y"}}),
-        Plot.tip(categoricalCrimes, Plot.pointer({x: "category", y: "value"}))
-    ]
-});
+const getCategoryPlot = barChart(categoricalCrimes, "category", "total", "Category", "Amount of crimes");
+const getRegionPlot = barChart(regionCrimes, "region", "total", "Region", "Amount of crimes");
+const getYearPlot = barChart(yearCrimes, "year", "total", "Year", "Amount of crimes");
+const getMonthPlot = barChart(monthCrimes, "month", "total", "Month", "Amount of crimes");
 ```
 
 ```html
@@ -86,15 +79,51 @@ const getCategoryPlot = (width) => Plot.plot({
             In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
         </p>
         <p>
-            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen.
+            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende button:
         </p>
+        <div>
+            <i>Klik me!</i>
+            ${parkInput_dataset}
+        </div>
   </div>
   <div class="grid-colspan-2">
-        ${parkInput_dataset}
-        ${resize((width) => getCategoryPlot(width))}
+        <h4>Aantal misdrijven per categorie</h4>
+        ${getCategoryPlot}
   </div>
 </div>
 ```
+
+```html
+<div class="grid grid-cols-3">
+  <div class="grid-colspan-2">
+      <h4>Aantal misdrijven per regio</h4>
+      ${getRegionPlot}
+  </div>
+  <div class="grid-colspan-1">
+      <p>
+          Bekijk zeker ook de 3 andere plots voor een ruimer beeld van de dataset. Het is bijvoorbeeld duidelijk dat, alhoewel de criminaleit redelijk constant blijft doorheen de tijd, we wel een onevenwicht hebben tussen de regio's.
+      </p>
+      <p>
+          Op de figuur links zien we bijvoorbeeld dat het merendeel van de misdrijven in de binnenstad plaatsvindt. Dit kan te maken hebben met het aantal inwoners, een strengere controle of omdat de binnenstad gewoonweg een populaire locatie is. Wat de reden ook kan zijn, het kan belangrijk zijn om deze nuance in je achterhoofd te houden.
+      </p>
+  </div>
+</div>
+```
+
+```html
+<div class="grid grid-cols-2">
+  <div class="grid-colspan-1">
+      <h4>Aantal misdrijven per jaar</h4>
+      ${getYearPlot}
+  </div>
+  <div class="grid-colspan-1">
+      <h4>Aantal misdrijven per maand</h4>
+      ${getMonthPlot}  
+  </div>
+</div>
+```
+
+
 ## Misdrijven per wijk
 
 ```js show
@@ -120,10 +149,8 @@ const showCumulative = Generators.input(cumulativeInput);
 const scaleInput = Inputs.toggle({label: "Gebruik logaritmische schaal", value: true});
 const logScale = Generators.input(scaleInput);
 
-const mapCrimeCats = ["Alle misdrijven"]
-mapCrimeCats.push(...categories)
-const categoryInput = Inputs.select(mapCrimeCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
-const categoryValue = Generators.input(categoryInput);
+const mapCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
+const mapCategoryValue = Generators.input(mapCategoryInput);
 ```
 
 ```js
@@ -145,8 +172,8 @@ d3.select(dateInput)
 ```js
 // The map
 let crimes = new Query(crimeData);
-if(categoryValue !== "Alle misdrijven"){
-    crimes = crimes.filterByCategory(categoryValue);
+if(mapCategoryValue !== categoryDefault){
+    crimes = crimes.filterByCategory(mapCategoryValue);
 }
 if(!showPark_mainMap){
     // TODO remove parkin crime data
@@ -208,149 +235,95 @@ const getMapPlot = (width) => Plot.plot({
         ${scaleInput}
         ${cumulativeInput}
         ${dateInput}
-        ${categoryInput}
+        ${mapCategoryInput}
     </div>
 </div>
 ```
 
 
-## Line chart
+## Criminaliteit doorheen de tijd
 
 ```js
-const category = view(Inputs.select([null].concat(categories), {label: "Selecteer categorie:"}));
+// Inputs
+const lineChartCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
+const lineChartCategoryValue = Generators.input(lineChartCategoryInput);
+const lineChartRegionInput = Inputs.select(regionCats, {value: "Alle regio's", label: "Selecteer regio"});
+const lineChartRegionValue = Generators.input(lineChartRegionInput);
 ```
+
 ```js
-const resultPerMonth = new Query(crimeData).filterByCategory(category).groupByYear().groupByMonth().aggregate("n.a.", (year, month) => {
+// Plots
+let category = lineChartCategoryValue;
+if(category === categoryDefault) {
+    category = null;
+}
+let region = lineChartRegionValue;
+if(region === regionDefault) {
+    region = null;
+}
+
+function convert_to_date_string(year, month){
     let index = (months.indexOf(month) + 1).toString();
     if (index.length < 2) {
         index = `0${index}`;
     }
     return `${year}-${index}-01`;
-}).getTotal().aggregate("date").result();
+};
 
-display(lineChart(resultPerMonth, "date", "total"));
+// Category
+let resultPerMonthCategoryQuery = new Query(crimeData).filterByCategory(category).groupByYear();
+if (category === "Verkeersongevallen met lichamelijk letsel") {
+    resultPerMonthCategoryQuery = resultPerMonthCategoryQuery.deleteMultiple(["2018", "2019"]);
+}
+const resultPerMonthCategory = resultPerMonthCategoryQuery.groupByMonth()
+                                                          .aggregate("n.a.", convert_to_date_string)
+                                                          .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                          .getTotal()
+                                                          .aggregate("date")
+                                                          .result();
+
+const getCategoryLineChart = lineChart(resultPerMonthCategory, "date", "total");
+
+// Region
+const resultPerMonthRegion = new Query(crimeData).filterByRegion(region)
+                                                 .groupByYear()
+                                                 .groupByMonth()
+                                                 .aggregate("n.a.", convert_to_date_string)
+                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                 .getTotal()
+                                                 .aggregate("date")
+                                                 .result();
+
+const getRegionLineChart = lineChart(resultPerMonthRegion, "date", "total");
 ```
 
-## Amount of crimes
-We can then take a look at the amount of crimes in each category and in each year.
-
-```js
-const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
-
-const queryResult = new Query(crimeData).groupByCategory().deleteMultiple(["Parkeerovertredingen", "Fietsdiefstal"]).getTotal().split();
-
-amountOfCrimesPerCategoryChart.setOption({
-  title: {
-    text: "Total amount of crimes per category."
-  },
-  tooltip: {},
-  xAxis: {
-    type: "category",
-    data: queryResult.keys,
-    axisLabel: {
-      interval: 0,
-      rotate: 30
-    }
-  },
-  yAxis: {},
-  series: [
-    {
-      name: "crimes",
-      type: "bar",
-      data: queryResult.values
-    }
-  ],
-  grid: {containLabel: true}
-});
-```
-
-```js
-const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
-
-const queryResult = new Query(crimeData).groupByRegion().getTotal().split();
-
-amountOfCrimesPerCategoryChart.setOption({
-  title: {
-    text: "Total amount of crimes per region."
-  },
-  tooltip: {},
-  xAxis: {
-    type: "category",
-    data: queryResult.keys,
-    axisLabel: {
-      interval: 0,
-      rotate: 30
-    }
-  },
-  yAxis: {},
-  series: [
-    {
-      name: "crimes",
-      type: "bar",
-      data: queryResult.values
-    }
-  ],
-  grid: {containLabel: true}
-});
-```
-
-```js
-const amountOfCrimesPerCategoryChart = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
-
-const queryResult = new Query(crimeData).groupByMonth().getTotal().split();
-
-amountOfCrimesPerCategoryChart.setOption({
-  title: {
-    text: "Total amount of crimes per month."
-  },
-  tooltip: {},
-  xAxis: {
-    type: "category",
-    data: queryResult.keys,
-    axisLabel: {
-      interval: 0,
-      rotate: 30
-    }
-  },
-  yAxis: {},
-  series: [
-    {
-      name: "crimes",
-      type: "bar",
-      data: queryResult.values
-    }
-  ],
-  grid: {containLabel: true}
-});
-```
-
-```js
-const amountOfCrimesPerYear = echarts.init(display(html`<div style="width: 1000px; height:650px;"></div>`));
-
-const queryResult = new Query(crimeData).groupByYear().getTotal().split();
-
-amountOfCrimesPerYear.setOption({
-  title: {
-    text: "Total amount of crimes per year."
-  },
-  tooltip: {},
-  xAxis: {
-    type: "category",
-    data: queryResult.keys,
-    axisLabel: {
-      interval: 0
-    }
-  },
-  yAxis: {},
-  series: [
-    {
-      name: "crimes",
-      type: "bar",
-      data: queryResult.values
-    }
-  ],
-  grid: {containLabel: true}
-});
+```html
+<div class="grid grid-cols-3">
+  <div class="grid-colspan-1">
+    <p>
+        Zoals we eerder al opmerkten bestaat de dataset uit talrijke categoriëen. Even interessant buiten bekijken welk soort criminaliteit het meest optreedt is bekijken wanneer deze het meest optreedt.
+    </p>
+    <p>
+        In deze interactieve linechart kan je bekijken in welke periode een bepaald soort criminaliteit het meest prevalent is. Sommige van deze periodes zijn te verklaren via externe factoren, waar we ook later op zullen ingaan. Het kan echter al zeer interessant zijn om zelf eens met de data te spelen en misschien ontdek je zelf enkele verbanden.
+    </p>
+    <p>
+        Verder kan je ook bekijken wanneer een regio het meest turbulent is. Sommige regio's zien tijdens de zomermaanden een sterke stijging/daling in het aantal misdrijven. In andere regio's zien we ook een duidelijk stijgende of dalende trend in de voorbije jaren.
+    </p>
+    <p>
+        Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de regio Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk zoiezo altijd weinig criminaliteit is waardoor fluctuaties groter lijken.
+    </p>  
+  </div>
+  <div class="grid-colspan-2">
+      <div>
+          <h4>Trend in het aantal misdrijven voor categorie: ${lineChartCategoryInput}</h4>
+          ${getCategoryLineChart}
+      </div>
+      <div>
+          <h4>Trend in het aantal misdrijven in de regio: ${lineChartRegionInput}</h4>
+          ${getRegionLineChart}
+      </div>
+  </div>
+</div>
 ```
 
 ## De ernst van misdrijven
