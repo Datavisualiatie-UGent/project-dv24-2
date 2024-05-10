@@ -330,7 +330,7 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "date", "total");
 TODO
 ## Gentse feesten
 TODO
-## Covid
+## Criminaliteit tijdens Covid
 ```js
   const zakrollers = new Query(crimeData).filterByCategory("Zakkenrollerij")
                                                  .groupByYear()
@@ -360,34 +360,7 @@ TODO
     });
 
 ```
-```js
-  const fietsendief = new Query(crimeData).filterByCategory("Fietsdiefstal")
-                                                 .groupByYear()
-                                                 .groupByMonth()
-                                                 .aggregate("n.a.", convert_to_date_string)
-                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
-                                                 .getTotal()
-                                                 .aggregate("date")
-                                                 .result();
-  const domain = [new Date(fietsendief[0]["date"]), new Date(fietsendief[fietsendief.length-1]["date"])];
-  const startCovidF = fietsendief.find(d => new Date(d["date"]).getTime() === new Date("2020-03-01").getTime());
-  const eindCovidF = fietsendief.find(d => new Date(d["date"]).getTime() === new Date("2022-05-01").getTime());
 
-  const covidPlotFiets =  Plot.plot({
-      marks: [
-          Plot.ruleY([0]),
-          Plot.lineY(fietsendief, {x:"date", y:"total", marker:true}),
-          Plot.text([startCovidF], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
-          Plot.text([eindCovidF], {x: "date", y: "total", text:  ["Einde Covid"], dy: "52", fontSize:14, fill:"red"}),
-          Plot.dot([startCovidF], {x: "date", y: "total", fill:"red", r:5}),
-          Plot.dot([eindCovidF], {x: "date", y: "total", fill:"red", r:5})
-      ],
-      
-
-      x: {domain: domain, grid:true},
-  });
-
-```
 ```js
   const noParking = getCategories().filter(c => c !== "Parkeerovertredingen");
   const allCrime = new Query(crimeData).filterByCategories(noParking)
@@ -404,11 +377,12 @@ TODO
 
     const covidPlotAll =  Plot.plot({
         title: "Alle misdaden",
+        subtitle: "zonder parkeerovertredingen",
         marks: [
             Plot.ruleY([0]),
             Plot.lineY(allCrime, {x:"date", y:"total", marker:true}),
             Plot.text([startCovidAll], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
-            Plot.text([eindCovidAll], {x: "date", y: "total", text:  ["Einde Covid"], dy: "34", fontSize:14, fill:"red"}),
+            Plot.text([eindCovidAll], {x: "date", y: "total", text:  ["Einde Covid"], dy: "40", fontSize:14, fill:"red"}),
             Plot.dot([startCovidAll], {x: "date", y: "total", fill:"red", r:5}),
             Plot.dot([eindCovidAll], {x: "date", y: "total", fill:"red", r:5})
         ],
@@ -420,33 +394,27 @@ TODO
 ```
 ```html
 <div class="grid grid-cols-3">
-    <div class="grid-colspan-2">
-      ${covidPlotZak}
-    </div>
-    <div class="grid-colspan-1">
+     <div class="grid-colspan-1">
       <p>
-      Wat uitleg
+      In deze grafiek wordt het aantal misdaden in onze stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
       </p>
     </div>
-</div>
-<div class="grid grid-cols-3">
-    <div class="grid-colspan-2">
-      ${covidPlotFiets}
-    </div>
-    <div class="grid-colspan-1">
-      <p>
-      Wat uitleg
-      </p>
-    </div>
-</div>
-<div class="grid grid-cols-3">
     <div class="grid-colspan-2">
       ${covidPlotAll}
     </div>
+ 
+</div>
+<div class="grid grid-cols-3">
+
     <div class="grid-colspan-1">
       <p>
-      Wat uitleg
+      In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren, waaronder verminderde drukte in openbare ruimtes en het toepassen van social distancing vermoeilijkt het zakkenrollen.
       </p>
     </div>
+        <div class="grid-colspan-2">
+      ${covidPlotZak}
+    </div>
 </div>
+
+
 ```
