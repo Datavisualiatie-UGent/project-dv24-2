@@ -107,12 +107,14 @@ const getCategoryPlot = (width) => Plot.plot({
 ## Misdrijven per wijk
 
 ```js show
-const dates = [];
+let dates = [];
 for(let year of years){
     for(let month of months){
-        dates.push(year + "-" + month);
+        dates.push(year + " - " + month);
     }
 }
+// last 4 months of 2023 have no data
+dates = dates.slice(0, -4)
 ```
 
 ```js
@@ -136,10 +138,7 @@ const categoryValue = Generators.input(categoryInput);
 ```
 
 ```js
-const split = dates[dateIdx].split("-");
-const selectedYear = parseInt(split[0]);
-const selectedMonth = split[1];
-const dateStr = selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1) + " " + selectedYear;
+const selectedDate = dates[dateIdx];
 ```
 
 ```js
@@ -148,30 +147,32 @@ d3.select(dateInput)
     .remove(); // use d3 to remove number box
 d3.select(dateInput)
     .selectAll("label")
-    .html(dateStr); // Replace label with value
+    .html(selectedDate); // Replace label with value
 ```
 
 ```js
+let mapCrimes = new Query(crimeData);
 // The map
 if(!showPark_mainMap){
-    // TODO remove parkin crime data
-    
+    mapCrimes = mapCrimes.groupByCategory().delete("Parkeerovertredingen").aggregate();
 }
+if(categoryValue !== "Alle misdrijven"){
+    mapCrimes = mapCrimes.filterByCategory(categoryValue);
+}
+mapCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
 if(showCumulative){
-    // TODO remove all dates after given date
+    console.log(dateIdx + 1)
+    let slice = dates.slice(0, dateIdx + 1)
+    console.log(slice);
+    console.log(mapCrimes);
+    mapCrimes = mapCrimes.selectMultiple(slice);
 }else {
-    // TODO remove all dates except given date
+    mapCrimes = mapCrimes.select(selectedDate);
 }
-// calculate the domain
-let crimesDomain = new Query(crimeData);
 
-let totalCrimes = crimesDomain.groupByRegion().getTotal().split();
+mapCrimes = mapCrimes.groupByRegion().getTotal().split();
 
-let minCrimes = Math.min(...totalCrimes.values);
-let maxCrimes = Math.max(...totalCrimes.values);
-
-// console.log(minCrimes,maxCrimes)
-// const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale,[minCrimes,maxCrimes])
+const getMapPlot = mapPlot(mapCrimes, geoData, logScale);
 ```
 
 ```html
