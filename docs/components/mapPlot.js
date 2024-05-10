@@ -24,12 +24,14 @@ export function mapPlot(crimes, geoData, logScale, domain){
             domain: mapScope,
         },
         color: {
-            type: logScale ? "log" : "linear",
+            type: logScale ? "symlog" : "linear",
             domain: domain,
-            n:4,
             scheme: "blues",
             label: "Misdrijven per wijk",
-            legend: true
+            legend: true,
+            width:width,
+            ticks: 4,
+            tickFormat: tickFormatter,
         },
         marks: [
             Plot.geo(featuresCopy, { fill: (d) => d.properties.crimes}), // fill
@@ -38,9 +40,34 @@ export function mapPlot(crimes, geoData, logScale, domain){
         ]
     })
     return getMapPlot;
+}
 
+const tickFormatter = (value) => {
+  if(value < 1000){
+    return value
+  }
+  return `${value/1000}k`
 }
 
 function getLegendDomain(crimes){
   return [Math.min(...crimes.values), Math.max(...crimes.values)];
+}
+
+export function getDomainFromRange(crimes, dates, length){
+  let n = dates.length;
+  let minVal = Infinity;
+  let maxVal = -Infinity;
+  // iterate all possible sliced for this length
+  // get min and max
+  for(let i = 0; i + length <= n; i++){
+    const datesSlice = dates.slice(i, i + length);
+    let slicedCrimes = crimes.selectMultiple(datesSlice).aggregate().groupByRegion().getTotal().split();
+
+    let slicedMin = Math.min(...slicedCrimes.values);
+    let slicedMax = Math.max(...slicedCrimes.values);
+    minVal = Math.min(minVal, slicedMin);
+    maxVal = Math.max(maxVal, slicedMax);
+  }
+
+  return [minVal, maxVal];
 }

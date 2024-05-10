@@ -23,7 +23,8 @@ import {lineChart} from "./components/lineChart.js"
 import {barChart} from "./components/barChart.js"
 import {parallel} from "./components/parallel.js"
 import {Query, getMonths, getYears, getCategories, getRegions, getLightCategories, getMediumCategories, getSevereCategories} from "./components/queries.js";
-import {mapPlot} from "./components/mapPlot.js"
+import {mapPlot, getDomainFromRange} from "./components/mapPlot.js"
+import {interval} from "./components/intervalSlider.js"
 
 // misc
 import * as echarts from "npm:echarts";
@@ -52,7 +53,6 @@ const regionCats = [regionDefault].concat(regions)
 ```
 
 ## De dataset
-
 ```js
 const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen", value: true})
 const showPark_dataset = Generators.input(parkInput_dataset);
@@ -148,14 +148,19 @@ dates = dates.slice(0, -4)
 
 ```js
 // Map inputs
-const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " ", value: dates.length - 1});
-const dateIdx = Generators.input(dateInput);
+const sliderInput = interval(
+    [0, dates.length - 1],
+    {
+        step: 1,
+        value: [0, dates.length - 1],
+        label: 'Selecteer periode',
+        format: ([start, end]) => `${dates[start]} tem ${dates[end]}`
+    }
+)
+const sliderValues = Generators.input(sliderInput);
 
 const parkInput_mainMap = Inputs.toggle({label: "Toon parkeer overtredingen"});
 const showPark_mainMap = Generators.input(parkInput_mainMap);
-
-const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap", value: true});
-const showCumulative = Generators.input(cumulativeInput);
 
 const scaleInput = Inputs.toggle({label: "Gebruik logaritmische schaal", value: true});
 const logScale = Generators.input(scaleInput);
@@ -163,18 +168,15 @@ const logScale = Generators.input(scaleInput);
 const mapCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
 const mapCategoryValue = Generators.input(mapCategoryInput);
 ```
-
 ```js
-const selectedDate = dates[dateIdx];
-```
+const splitVals = sliderValues.split("-");
+const minIdx = parseInt(splitVals[0]);
+const maxIdx = parseInt(splitVals[1]) + 1;
 
-```js
-d3.select(dateInput)
-    .selectAll("input[type='number']")
-    .remove(); // use d3 to remove number box
-d3.select(dateInput)
-    .selectAll("label")
-    .html(selectedDate); // Replace label with value
+const minVal = dates[minIdx];
+const maxVal = dates[maxIdx];
+
+const selectedDates = dates.slice(minIdx, maxIdx);
 ```
 
 ```js
@@ -186,15 +188,12 @@ if(!showPark_mainMap){
 if(mapCategoryValue !== "Alle misdrijven"){
     mapCrimes = mapCrimes.filterByCategory(mapCategoryValue);
 }
-mapCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
-if(showCumulative){
-    mapCrimes = mapCrimes.selectMultiple(dates.slice(0, dateIdx + 1)).aggregate();
-}else {
-    mapCrimes = mapCrimes.select(selectedDate);
-}
+const domainCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
+let mainMapDomain = getDomainFromRange(domainCrimes, dates, selectedDates.length)
 
+mapCrimes = domainCrimes.selectMultiple(selectedDates).aggregate();
 mapCrimes = mapCrimes.groupByRegion().getTotal().split();
-const getMapPlot = mapPlot(mapCrimes, geoData, logScale, [Math.min(...mapCrimes.values), Math.max(...mapCrimes.values)]);
+const getMapPlot = mapPlot(mapCrimes, geoData, logScale, mainMapDomain);
 ```
 
 ```html
@@ -218,8 +217,7 @@ const getMapPlot = mapPlot(mapCrimes, geoData, logScale, [Math.min(...mapCrimes.
     <div>
         ${parkInput_mainMap}
         ${scaleInput}
-        ${cumulativeInput}
-        ${dateInput}
+        ${sliderInput}
         ${mapCategoryInput}
     </div>
 </div>
