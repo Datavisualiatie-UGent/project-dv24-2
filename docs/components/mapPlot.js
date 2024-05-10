@@ -8,7 +8,7 @@ import * as Plot from "npm:@observablehq/plot";
  * @param logScale: whether or not to use logScale
  * @constructor
  */
-export function mapPlot(crimes, geoData, logScale){
+export function mapPlot(crimes, geoData, logScale, domain){
     // need to copy the features to avoid changing the original data
     let featuresCopy = JSON.parse(JSON.stringify(geoData.features));
     featuresCopy.forEach((g) => {
@@ -25,7 +25,7 @@ export function mapPlot(crimes, geoData, logScale){
         },
         color: {
             type: logScale ? "log" : "linear",
-            // domain : getLegendDomain(crimes),
+            domain: domain,
             n:4,
             scheme: "blues",
             label: "Misdrijven per wijk",

@@ -171,8 +171,7 @@ if(showCumulative){
 }
 
 mapCrimes = mapCrimes.groupByRegion().getTotal().split();
-
-const getMapPlot = mapPlot(mapCrimes, geoData, logScale);
+const getMapPlot = mapPlot(mapCrimes, geoData, logScale, [Math.min(...mapCrimes.values), Math.max(...mapCrimes.values)]);
 ```
 
 ```html
@@ -345,41 +344,114 @@ amountOfCrimesPerYear.setOption({
 
 ## De ernst van misdrijven
 ```js
+const baseCategories = [getLightCategories(), getMediumCategories(), getSevereCategories()];
+const resetBtn = Inputs.button("Reset", {value: baseCategories, reduce: () => (baseCategories)})
+const resetCategories = Generators.input(resetBtn)
+```
+
+```js
+const tableData = categories.map((value) => ({"Misdrijf": value}))
+
+// light
+const lightTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[0].includes(o.Misdrijf)), required: false});
+const lightTableSelection = Generators.input(lightTableInput);
+
+// medium
+const mediumTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[1].includes(o.Misdrijf)), required: false});
+const mediumTableSelection = Generators.input(mediumTableInput);
+
+// severe
+const severeTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[2].includes(o.Misdrijf)), required: false});
+const severeTableSelection = Generators.input(severeTableInput); 
+```
+
+```js
+const lightCrimes = lightTableSelection.map((o) => (o.Misdrijf))
+const mediumCrimes = mediumTableSelection.map((o) => (o.Misdrijf))
+const severeCrimes = severeTableSelection.map((o) => (o.Misdrijf))
+```
+
+```js
+function getCrimeData(crimeData, cats){
+    let selectedData = new Query(crimeData).filterByCategories(cats).groupByRegion().getTotal().split();
+    if (cats.length == 0){
+        // Nothing is selected
+        selectedData.values = new Array(selectedData.keys.length).fill(0)
+    }
+    return selectedData
+}
+```
+
+```js
+// create the domain ranges so that all the maps legends are the same
+let minCrimesSeverity = Infinity;
+let maxCrimesSeverity = -Infinity;
+let selectedCategories = lightCrimes.concat(mediumCrimes).concat(severeCrimes);
+let totalCrimes = new Query(crimeData).filterByCategories(selectedCategories).groupByRegion().getTotal().split();
+let categoryMin = Math.min(...totalCrimes.values);
+let categoryMax = Math.max(...totalCrimes.values);
+minCrimesSeverity = Math.min(minCrimesSeverity, categoryMin);
+maxCrimesSeverity = Math.max(maxCrimesSeverity, categoryMax);
+
+const domain = [minCrimesSeverity, maxCrimesSeverity]
+```
+
+```js
 const mapLight = mapPlot(
-    new Query(crimeData).filterByCategories(getLightCategories()).groupByRegion().getTotal().split(),
+    getCrimeData(crimeData, lightCrimes),
     geoData,
-    true
+    true,
+    domain
 )
 ```
 ```js
 const mapMedium = mapPlot(
-    new Query(crimeData).filterByCategories(getMediumCategories()).groupByRegion().getTotal().split(),
+    getCrimeData(crimeData, mediumCrimes),
     geoData,
-    true
+    true,
+    domain
 )
 ```
-```js 
-const mapHeavy = mapPlot(
-    new Query(crimeData).filterByCategories(getSevereCategories()).groupByRegion().getTotal().split(),
+```js
+const mapSevere = mapPlot(
+    getCrimeData(crimeData, severeCrimes),
     geoData,
-    true
+    true,
+    domain
 )
 ```
 
 ```html
 <div class="grid grid-cols-3">
-
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Licht misdrijf</h4>
+        ${lightTableInput}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Gematigd misdrijf</h4>
+        ${mediumTableInput}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Ernstig misdrijf</h4>
+        ${severeTableInput}
+    </div>
+</div>
+```
+```html
+<div class="grid grid-cols-3">
     <div class="grid-colspan-1 grid-rowspan-2">
         ${resize((width) => mapLight(width))}
     </div>
-      <div class="grid-colspan-1 grid-rowspan-2">
+    <div class="grid-colspan-1 grid-rowspan-2">
         ${resize((width) => mapMedium(width))}
     </div>
-      <div class="grid-colspan-1 grid-rowspan-2">
-        ${resize((width) => mapHeavy(width))}
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapSevere(width))}
     </div>
-  
 </div>
+```
+```html
+${resetBtn}
 ```
 TODO
 ## Gentse feesten
