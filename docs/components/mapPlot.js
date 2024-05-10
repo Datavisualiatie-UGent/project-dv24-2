@@ -1,4 +1,3 @@
-import {Query} from "./queries.js";
 import * as d3 from "npm:d3";
 import * as Plot from "npm:@observablehq/plot";
 
@@ -26,7 +25,7 @@ export function mapPlot(crimes, geoData, logScale){
         },
         color: {
             type: logScale ? "log" : "linear",
-            domain : getLegendDomain(crimes),
+            // domain : getLegendDomain(crimes),
             n:4,
             scheme: "blues",
             label: "Misdrijven per wijk",
