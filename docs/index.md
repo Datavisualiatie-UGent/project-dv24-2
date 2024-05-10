@@ -396,7 +396,7 @@ TODO
 <div class="grid grid-cols-3">
      <div class="grid-colspan-1">
       <p>
-      In deze grafiek wordt het aantal misdaden in onze stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
+      In deze grafiek wordt het aantal misdaden in de stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
       </p>
     </div>
     <div class="grid-colspan-2">
