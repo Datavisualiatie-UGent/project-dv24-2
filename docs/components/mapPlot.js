@@ -4,24 +4,12 @@ import * as Plot from "npm:@observablehq/plot";
 
 /**
  *
- * @param crimeData
- * @param geoData
- * @param crimeCategories - is one element or a list of crimes
- * @param logScale
+ * @param crimes: The crimes for each region. formatted as arrays, 1 with the region names, and 1 with the values. {keys: [...], values: [...]} 
+ * @param geoData: The geoData
+ * @param logScale: whether or not to use logScale
  * @constructor
  */
-export function mapPlot(crimeData, geoData, crimeCategories, logScale, legendDomain){
-
-    let crimes = new Query(crimeData);
-    if(Array.isArray(crimeCategories)){
-        crimes = crimes.filterByCategories(crimeCategories);
-    }
-    else if(crimeCategories !== "Alle misdrijven"){
-        crimes = crimes.filterByCategory(crimeCategories);
-    }
-    crimes = crimes.groupByRegion().getTotal().split();
-    console.log("crimes", crimes)
-
+export function mapPlot(crimes, geoData, logScale){
     // need to copy the features to avoid changing the original data
     let featuresCopy = JSON.parse(JSON.stringify(geoData.features));
     featuresCopy.forEach((g) => {
@@ -38,7 +26,7 @@ export function mapPlot(crimeData, geoData, crimeCategories, logScale, legendDom
         },
         color: {
             type: logScale ? "log" : "linear",
-            domain : legendDomain,
+            domain : getLegendDomain(crimes),
             n:4,
             scheme: "blues",
             label: "Misdrijven per wijk",
@@ -52,4 +40,8 @@ export function mapPlot(crimeData, geoData, crimeCategories, logScale, legendDom
     })
     return getMapPlot;
 
+}
+
+function getLegendDomain(crimes){
+  return [Math.min(...crimes.values), Math.max(...crimes.values)];
 }

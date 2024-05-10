@@ -170,8 +170,8 @@ let totalCrimes = crimesDomain.groupByRegion().getTotal().split();
 let minCrimes = Math.min(...totalCrimes.values);
 let maxCrimes = Math.max(...totalCrimes.values);
 
-console.log(minCrimes,maxCrimes)
-const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale,[minCrimes,maxCrimes])
+// console.log(minCrimes,maxCrimes)
+// const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale,[minCrimes,maxCrimes])
 ```
 
 ```html
@@ -344,29 +344,25 @@ amountOfCrimesPerYear.setOption({
 
 ## De ernst van misdrijven
 ```js
-// create the domain ranges so that all the maps legends are the same
-let minCrimesSeverity = Infinity;
-let maxCrimesSeverity = -Infinity;
-let crimes = new Query(crimeData);
-[getLightCategories(), getMediumCategories(), getSevereCategories()].forEach(categories => {
-    let filteredCrimes = crimes.filterByCategories(categories);
-    let totalCrimes = filteredCrimes.groupByRegion().getTotal().split();
-
-    let categoryMin = Math.min(...totalCrimes.values);
-    let categoryMax = Math.max(...totalCrimes.values);
-
-    minCrimesSeverity = Math.min(minCrimesSeverity, categoryMin);
-    maxCrimesSeverity = Math.max(maxCrimesSeverity, categoryMax);
-});
+const mapLight = mapPlot(
+    new Query(crimeData).filterByCategories(getLightCategories()).groupByRegion().getTotal().split(),
+    geoData,
+    true
+)
 ```
 ```js
-const mapLight = mapPlot(crimeData, geoData, getLightCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
-```
-```js
-const mapMedium = mapPlot(crimeData, geoData, getMediumCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
+const mapMedium = mapPlot(
+    new Query(crimeData).filterByCategories(getMediumCategories()).groupByRegion().getTotal().split(),
+    geoData,
+    true
+)
 ```
 ```js 
-const mapHeavy = mapPlot(crimeData, geoData, getSevereCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
+const mapHeavy = mapPlot(
+    new Query(crimeData).filterByCategories(getSevereCategories()).groupByRegion().getTotal().split(),
+    geoData,
+    true
+)
 ```
 
 ```html
