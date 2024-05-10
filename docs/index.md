@@ -56,14 +56,19 @@ const regionCats = [regionDefault].concat(regions)
 ```js
 const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen", value: true})
 const showPark_dataset = Generators.input(parkInput_dataset);
-// if(!showPark_dataset){
-//     categoricalCrimes = categoricalCrimes.delete("Parkeerovertredingen");
-// }
 
-let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().aggregate("category").result();
-let regionCrimes = new Query(crimeData).groupByRegion().getTotal().aggregate("region").result();
-let yearCrimes = new Query(crimeData).groupByYear().getTotal().aggregate("year").result();
-let monthCrimes = new Query(crimeData).groupByMonth().getTotal().aggregate("month").result();
+```
+```js
+var baseQuery = new Query(crimeData).groupByCategory();
+if(!showPark_dataset){
+    baseQuery = baseQuery.delete("Parkeerovertredingen");
+}
+baseQuery = baseQuery.aggregate("category");
+
+let categoricalCrimes = baseQuery.groupByCategory().getTotal().aggregate("category").result();
+let regionCrimes = baseQuery.groupByRegion().getTotal().aggregate("region").result();
+let yearCrimes = baseQuery.groupByYear().getTotal().aggregate("year").result();
+let monthCrimes = baseQuery.groupByMonth().getTotal().aggregate("month").result();
 ```
 
 ```js
@@ -83,7 +88,7 @@ const getMonthPlot = barChart(monthCrimes, "month", "total", "Month", "Amount of
             In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
         </p>
         <p>
-            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende button:
+            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
         </p>
         <div>
             <i>Klik me!</i>
