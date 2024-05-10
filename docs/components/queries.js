@@ -142,6 +142,31 @@ export class Query
     }
 
     /**
+     * Filter the query by multiple categories.
+     */
+    filterByCategories(categories) {
+        if (!Array.isArray(categories) || categories.length === 0) {
+            return this;
+        }
+        if (this._final)
+            throw "QueryError: the query is already finalized, can not filter the entries anymore."
+        if (!Array.isArray(this.data)) {
+            let returnedObject = {};
+            for (const [key, value] of Object.entries(this.data)) {
+                returnedObject[key] = new Query(value).filterByCategories(categories).data;
+            }
+            return new Query(returnedObject);
+        } else {
+            let filteredData = [];
+            for (const category of categories) {
+                const newQuery = new Query(this.data);
+                filteredData = [...filteredData, ...newQuery.groupByCategory().select(category).data];
+            }
+            return new Query(filteredData);
+        }
+    }
+
+    /**
      * Filter the query by year.
      */
     filterByYear(year) {
@@ -497,6 +522,35 @@ export function getCategories() {
        "Autodiefstal",
        "Verkeersongevallen met lichamelijk letsel"
    ]
+}
+
+export function getLightCategories() {
+    return [
+        "Geluidshinder",
+        "Sluikstorten",
+        "Parkeerovertredingen",
+        "Graffiti"
+    ]
+}
+export function getMediumCategories() {
+    return [
+        "Zakkenrollerij",
+        "Fietsdiefstal",
+        "Beschadiging aan auto",
+        "Diefstal uit of aan voertuigen",
+        "Bromfietsdiefstal"
+    ]
+}
+export function getSevereCategories() {
+    return [
+        "Diefstal met geweld zonder wapen",
+        "Diefstal gewapenderhand",
+        "Woninginbraak",
+        "Inbraak in bedrijf of handelszaak",
+        "Autodiefstal",
+        "Motordiefstal",
+        "Verkeersongevallen met lichamelijk letsel"
+    ]
 }
 
 /**

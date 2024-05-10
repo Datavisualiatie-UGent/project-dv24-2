@@ -21,7 +21,8 @@ import {loadGeometryData} from "./data/geometry/geometryData.js";
 import {cityNj, cityMap} from "./components/cityMap.js"
 import {lineChart} from "./components/lineChart.js"
 import {parallel} from "./components/parallel.js"
-import {Query, getMonths, getYears, getCategories} from "./components/queries.js";
+import {Query, getMonths, getYears, getCategories, getLightCategories, getMediumCategories, getSevereCategories} from "./components/queries.js";
+import {mapPlot} from "./components/mapPlot.js"
 
 // misc
 import * as echarts from "npm:echarts";
@@ -152,10 +153,6 @@ d3.select(dateInput)
 
 ```js
 // The map
-let crimes = new Query(crimeData);
-if(categoryValue !== "Alle misdrijven"){
-    crimes = crimes.filterByCategory(categoryValue);
-}
 if(!showPark_mainMap){
     // TODO remove parkin crime data
     
@@ -165,32 +162,16 @@ if(showCumulative){
 }else {
     // TODO remove all dates except given date
 }
-crimes = crimes.groupByRegion().getTotal().split();
-geoData.features.forEach((g) => {
-    // add crimes 
-    const index = crimes.keys.indexOf(g.properties.name);
-    g.properties.crimes = crimes.values[index];
-})
-const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
-const getMapPlot = (width) => Plot.plot({
-    width: width,
-    projection: {
-        type: "mercator",
-        domain: mapScope,
-    },
-    color: {
-        type: logScale ? "log" : "linear",
-        n:4,
-        scheme: "blues",
-        label: "Misdrijven per wijk",
-        legend: true
-    },
-    marks: [
-        Plot.geo(geoData.features, { fill: (d) => d.properties.crimes}), // fill
-        Plot.geo(geoData.features), // edges
-        Plot.tip(geoData.features, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
-    ]
-})
+// calculate the domain
+let crimesDomain = new Query(crimeData);
+
+let totalCrimes = crimesDomain.groupByRegion().getTotal().split();
+
+let minCrimes = Math.min(...totalCrimes.values);
+let maxCrimes = Math.max(...totalCrimes.values);
+
+console.log(minCrimes,maxCrimes)
+const getMapPlot = mapPlot(crimeData, geoData, categoryValue, logScale,[minCrimes,maxCrimes])
 ```
 
 ```html
@@ -362,6 +343,47 @@ amountOfCrimesPerYear.setOption({
 ```
 
 ## De ernst van misdrijven
+```js
+// create the domain ranges so that all the maps legends are the same
+let minCrimesSeverity = Infinity;
+let maxCrimesSeverity = -Infinity;
+let crimes = new Query(crimeData);
+[getLightCategories(), getMediumCategories(), getSevereCategories()].forEach(categories => {
+    let filteredCrimes = crimes.filterByCategories(categories);
+    let totalCrimes = filteredCrimes.groupByRegion().getTotal().split();
+
+    let categoryMin = Math.min(...totalCrimes.values);
+    let categoryMax = Math.max(...totalCrimes.values);
+
+    minCrimesSeverity = Math.min(minCrimesSeverity, categoryMin);
+    maxCrimesSeverity = Math.max(maxCrimesSeverity, categoryMax);
+});
+```
+```js
+const mapLight = mapPlot(crimeData, geoData, getLightCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
+```
+```js
+const mapMedium = mapPlot(crimeData, geoData, getMediumCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
+```
+```js 
+const mapHeavy = mapPlot(crimeData, geoData, getSevereCategories(),true,[minCrimesSeverity, maxCrimesSeverity])
+```
+
+```html
+<div class="grid grid-cols-3">
+
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapLight(width))}
+    </div>
+      <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapMedium(width))}
+    </div>
+      <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapHeavy(width))}
+    </div>
+  
+</div>
+```
 TODO
 ## Gentse feesten
 TODO
