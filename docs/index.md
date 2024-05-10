@@ -331,4 +331,122 @@ TODO
 ## Gentse feesten
 TODO
 ## Covid
-TODO
+```js
+  const zakrollers = new Query(crimeData).filterByCategory("Zakkenrollerij")
+                                                 .groupByYear()
+                                                 .groupByMonth()
+                                                 .aggregate("n.a.", convert_to_date_string)
+                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                 .getTotal()
+                                                 .aggregate("date")
+                                                 .result();
+    const domain = [new Date(zakrollers[0]["date"]), new Date(zakrollers[zakrollers.length-1]["date"])];
+    const startCovid = zakrollers.find(d => new Date(d["date"]).getTime() === new Date("2020-03-01").getTime());
+    const eindCovid = zakrollers.find(d => new Date(d["date"]).getTime() === new Date("2022-05-01").getTime());
+
+    const covidPlotZak =  Plot.plot({
+        title: "Zakkenrollerij",
+        marks: [
+            Plot.ruleY([0]),
+            Plot.lineY(zakrollers, {x:"date", y:"total", marker:true}),
+            Plot.text([startCovid], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
+            Plot.text([eindCovid], {x: "date", y: "total", text:  ["Einde Covid"], dy: "34", fontSize:14, fill:"red"}),
+            Plot.dot([startCovid], {x: "date", y: "total", fill:"red", r:5}),
+            Plot.dot([eindCovid], {x: "date", y: "total", fill:"red", r:5})
+        ],
+        
+
+        x: {domain: domain, grid:true},
+    });
+
+```
+```js
+  const fietsendief = new Query(crimeData).filterByCategory("Fietsdiefstal")
+                                                 .groupByYear()
+                                                 .groupByMonth()
+                                                 .aggregate("n.a.", convert_to_date_string)
+                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                 .getTotal()
+                                                 .aggregate("date")
+                                                 .result();
+  const domain = [new Date(fietsendief[0]["date"]), new Date(fietsendief[fietsendief.length-1]["date"])];
+  const startCovidF = fietsendief.find(d => new Date(d["date"]).getTime() === new Date("2020-03-01").getTime());
+  const eindCovidF = fietsendief.find(d => new Date(d["date"]).getTime() === new Date("2022-05-01").getTime());
+
+  const covidPlotFiets =  Plot.plot({
+      marks: [
+          Plot.ruleY([0]),
+          Plot.lineY(fietsendief, {x:"date", y:"total", marker:true}),
+          Plot.text([startCovidF], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
+          Plot.text([eindCovidF], {x: "date", y: "total", text:  ["Einde Covid"], dy: "52", fontSize:14, fill:"red"}),
+          Plot.dot([startCovidF], {x: "date", y: "total", fill:"red", r:5}),
+          Plot.dot([eindCovidF], {x: "date", y: "total", fill:"red", r:5})
+      ],
+      
+
+      x: {domain: domain, grid:true},
+  });
+
+```
+```js
+  const noParking = getCategories().filter(c => c !== "Parkeerovertredingen");
+  const allCrime = new Query(crimeData).filterByCategories(noParking)
+                                        .groupByYear()
+                                        .groupByMonth()
+                                        .aggregate("n.a.", convert_to_date_string)
+                                        .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                        .getTotal()
+                                        .aggregate("date")
+                                        .result();
+    const domain = [new Date(allCrime[0]["date"]), new Date(allCrime[allCrime.length-1]["date"])];
+    const startCovidAll = allCrime.find(d => new Date(d["date"]).getTime() === new Date("2020-03-01").getTime());
+    const eindCovidAll = allCrime.find(d => new Date(d["date"]).getTime() === new Date("2022-05-01").getTime());
+
+    const covidPlotAll =  Plot.plot({
+        title: "Alle misdaden",
+        marks: [
+            Plot.ruleY([0]),
+            Plot.lineY(allCrime, {x:"date", y:"total", marker:true}),
+            Plot.text([startCovidAll], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
+            Plot.text([eindCovidAll], {x: "date", y: "total", text:  ["Einde Covid"], dy: "34", fontSize:14, fill:"red"}),
+            Plot.dot([startCovidAll], {x: "date", y: "total", fill:"red", r:5}),
+            Plot.dot([eindCovidAll], {x: "date", y: "total", fill:"red", r:5})
+        ],
+        
+
+        x: {domain: domain, grid:true},
+    });
+
+```
+```html
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-2">
+      ${covidPlotZak}
+    </div>
+    <div class="grid-colspan-1">
+      <p>
+      Wat uitleg
+      </p>
+    </div>
+</div>
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-2">
+      ${covidPlotFiets}
+    </div>
+    <div class="grid-colspan-1">
+      <p>
+      Wat uitleg
+      </p>
+    </div>
+</div>
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-2">
+      ${covidPlotAll}
+    </div>
+    <div class="grid-colspan-1">
+      <p>
+      Wat uitleg
+      </p>
+    </div>
+</div>
+```
