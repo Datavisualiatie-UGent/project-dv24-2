@@ -306,6 +306,12 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "date", "total");
     <p>
         In deze interactieve linechart kan je bekijken in welke periode een bepaald soort criminaliteit het meest prevalent is. Sommige van deze periodes zijn te verklaren via externe factoren, waar we ook later op zullen ingaan. Het kan echter al zeer interessant zijn om zelf eens met de data te spelen en misschien ontdek je zelf enkele verbanden.
     </p>
+    <p>
+        Verder kan je ook bekijken wanneer een regio het meest turbulent is. Sommige regio's zien tijdens de zomermaanden een sterke stijging/daling in het aantal misdrijven. In andere regio's zien we ook een duidelijk stijgende of dalende trend in de voorbije jaren.
+    </p>
+    <p>
+        Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de regio Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk zoiezo altijd weinig criminaliteit is waardoor fluctuaties groter lijken.
+    </p>  
   </div>
   <div class="grid-colspan-2">
       <div>
