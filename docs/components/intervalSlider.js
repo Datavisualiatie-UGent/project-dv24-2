@@ -1,5 +1,8 @@
 import {html} from "npm:htl";
-
+/*
+ * This code came from a community project, and has been slightly modified to make it work in our project.
+ * https://observablehq.com/@mootari/range-slider#section_docs
+ */
 
 export function interval(range = [], options = {}) {
   const [min = 0, max = 1] = range;
