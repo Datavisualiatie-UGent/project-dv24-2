@@ -72,10 +72,10 @@ let monthCrimes = baseQuery.groupByMonth().getTotal().aggregate("month").result(
 ```
 
 ```js
-const getCategoryPlot = barChart(categoricalCrimes, "category", "total", "Category", "Amount of crimes");
-const getRegionPlot = barChart(regionCrimes, "region", "total", "Region", "Amount of crimes");
-const getYearPlot = barChart(yearCrimes, "year", "total", "Year", "Amount of crimes");
-const getMonthPlot = barChart(monthCrimes, "month", "total", "Month", "Amount of crimes");
+const getCategoryPlot = barChart(categoricalCrimes, "category", "total", "Category", "Amount of crimes", []);
+const getRegionPlot = barChart(regionCrimes, "region", "total", "Region", "Amount of crimes", []);
+const getYearPlot = barChart(yearCrimes, "year", "total", "Year", "Amount of crimes", []);
+const getMonthPlot = barChart(monthCrimes, "month", "total", "Month", "Amount of crimes", months);
 ```
 
 ```html
