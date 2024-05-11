@@ -5,7 +5,6 @@ theme: air
 # Criminaliteitscijfers Gent
 Brent Matthys, Warre Provoost en Mats Van Belle
 ***
-
 ```html
 <div>
     Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de <a href="https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers">dataset van Criminaliteitscijfers in Gent</a> te visualiseren.
@@ -13,6 +12,7 @@ Brent Matthys, Warre Provoost en Mats Van Belle
     Voor de visualisaties maken we voornamelijk gebruik van <a href="https://observablehq.com/plot/">observable plot</a> en waar nodig vullen we dit aan met <a href="https://d3js.org/">d3</a>.
 </div>
 ```
+
 ```js
 // imports 
 
@@ -25,7 +25,9 @@ import {cityNj, cityMap} from "./components/cityMap.js"
 import {lineChart} from "./components/lineChart.js"
 import {barChart} from "./components/barChart.js"
 import {parallel} from "./components/parallel.js"
-import {Query, getMonths, getYears, getCategories, getRegions} from "./components/queries.js";
+import {Query, getMonths, getYears, getCategories, getRegions, getLightCategories, getMediumCategories, getSevereCategories} from "./components/queries.js";
+import {mapPlot, getDomainFromRange} from "./components/mapPlot.js"
+import {interval} from "./components/intervalSlider.js"
 
 // misc
 import * as echarts from "npm:echarts";
@@ -54,25 +56,30 @@ const regionCats = [regionDefault].concat(regions)
 ```
 
 ## De dataset
-
 ```js
-const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen"})
+const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen", value: true})
 const showPark_dataset = Generators.input(parkInput_dataset);
-
-let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().aggregate("category").result().map(({category, total}) => ({categorie: category, totaal: total}));
-let regionCrimes = new Query(crimeData).groupByRegion().getTotal().aggregate("region").result().map(({region, total}) => ({wijk: region, totaal: total}));
-let yearCrimes = new Query(crimeData).groupByYear().getTotal().aggregate("year").result().map(({year, total}) => ({jaar: year, totaal: total}));
-let monthCrimes = new Query(crimeData).groupByMonth().getTotal().aggregate("month").result().map(({month, total}) => ({maand: month, totaal: total}));
 ```
 ```js
-categoricalCrimes
+var baseQuery = new Query(crimeData).groupByCategory();
+if(!showPark_dataset){
+    baseQuery = baseQuery.delete("Parkeerovertredingen");
+}
+baseQuery = baseQuery.aggregate("category");
 ```
 
 ```js
-const getCategoryPlot = barChart(categoricalCrimes, "categorie", "totaal", "Categorie", "Aantal misdrijven");
-const getRegionPlot = barChart(regionCrimes, "wijk", "totaal", "Wijk", "Aantal misdrijven");
-const getYearPlot = barChart(yearCrimes, "jaar", "totaal", "Jaar", "Aantal misdrijven");
-const getMonthPlot = barChart(monthCrimes, "maand", "totaal", "Maand", "Aantal misdrijven");
+let categoricalCrimes = baseQuery.groupByCategory().getTotal().aggregate("category").result().map(({category, total}) => ({categorie: category, totaal: total}));
+let regionCrimes = baseQuery.groupByRegion().getTotal().aggregate("region").result().map(({region, total}) => ({wijk: region, totaal: total}));
+let yearCrimes = baseQuery.groupByYear().getTotal().aggregate("year").result().map(({year, total}) => ({jaar: year, totaal: total}));
+let monthCrimes = baseQuery.groupByMonth().getTotal().aggregate("month").result().map(({month, total}) => ({maand: month, totaal: total}));
+```
+
+```js
+const getCategoryPlot = barChart(categoricalCrimes, "categorie", "totaal", "Categorie", "Aantal misdrijven", []);
+const getRegionPlot = barChart(regionCrimes, "wijk", "totaal", "Wijk", "Aantal misdrijven", []);
+const getYearPlot = barChart(yearCrimes, "jaar", "totaal", "Jaar", "Aantal misdrijven", []);
+const getMonthPlot = barChart(monthCrimes, "maand", "totaal", "Maand", "Aantal misdrijven", months);
 ```
 
 ```html
@@ -85,7 +92,7 @@ const getMonthPlot = barChart(monthCrimes, "maand", "totaal", "Maand", "Aantal m
             In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
         </p>
         <p>
-            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende button:
+            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
         </p>
         <div>
             <i>Klik me!</i>
@@ -133,24 +140,31 @@ const getMonthPlot = barChart(monthCrimes, "maand", "totaal", "Maand", "Aantal m
 ## Misdrijven per wijk
 
 ```js show
-const dates = [];
+let dates = [];
 for(let year of years){
     for(let month of months){
-        dates.push(year + "-" + month);
+        dates.push(year + " - " + month);
     }
 }
+// last 4 months of 2023 have no data
+dates = dates.slice(0, -4)
 ```
 
 ```js
 // Map inputs
-const dateInput = Inputs.range([0, dates.length - 1], {step: 1, label: " ", value: dates.length - 1});
-const dateIdx = Generators.input(dateInput);
+const sliderInput = interval(
+    [0, dates.length - 1],
+    {
+        step: 1,
+        value: [0, dates.length - 1],
+        label: 'Selecteer periode',
+        format: ([start, end]) => `${dates[start]} tem ${dates[end]}`
+    }
+)
+const sliderValues = Generators.input(sliderInput);
 
 const parkInput_mainMap = Inputs.toggle({label: "Toon parkeer overtredingen"});
 const showPark_mainMap = Generators.input(parkInput_mainMap);
-
-const cumulativeInput = Inputs.toggle({label: "Cummulatieve heatmap", value: true});
-const showCumulative = Generators.input(cumulativeInput);
 
 const scaleInput = Inputs.toggle({label: "Gebruik logaritmische schaal", value: true});
 const logScale = Generators.input(scaleInput);
@@ -158,64 +172,32 @@ const logScale = Generators.input(scaleInput);
 const mapCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
 const mapCategoryValue = Generators.input(mapCategoryInput);
 ```
-
 ```js
-const split = dates[dateIdx].split("-");
-const selectedYear = parseInt(split[0]);
-const selectedMonth = split[1];
-const dateStr = selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1) + " " + selectedYear;
+const splitVals = sliderValues.split("-");
+const minIdx = parseInt(splitVals[0]);
+const maxIdx = parseInt(splitVals[1]) + 1;
+
+const minVal = dates[minIdx];
+const maxVal = dates[maxIdx];
+
+const selectedDates = dates.slice(minIdx, maxIdx);
 ```
 
 ```js
-d3.select(dateInput)
-    .selectAll("input[type='number']")
-    .remove(); // use d3 to remove number box
-d3.select(dateInput)
-    .selectAll("label")
-    .html(dateStr); // Replace label with value
-```
-
-```js
+let mapCrimes = new Query(crimeData);
 // The map
-let crimes = new Query(crimeData);
-if(mapCategoryValue !== categoryDefault){
-    crimes = crimes.filterByCategory(mapCategoryValue);
-}
 if(!showPark_mainMap){
-    // TODO remove parkin crime data
-    
+    mapCrimes = mapCrimes.groupByCategory().delete("Parkeerovertredingen").aggregate();
 }
-if(showCumulative){
-    // TODO remove all dates after given date
-}else {
-    // TODO remove all dates except given date
+if(mapCategoryValue !== "Alle misdrijven"){
+    mapCrimes = mapCrimes.filterByCategory(mapCategoryValue);
 }
-crimes = crimes.groupByRegion().getTotal().split();
-geoData.features.forEach((g) => {
-    // add crimes 
-    const index = crimes.keys.indexOf(g.properties.name);
-    g.properties.crimes = crimes.values[index];
-})
-const mapScope = d3.geoCircle().center([3.73, 51.085]).radius(0.11).precision(2)()
-const getMapPlot = (width) => Plot.plot({
-    width: width,
-    projection: {
-        type: "mercator",
-        domain: mapScope,
-    },
-    color: {
-        type: logScale ? "log" : "linear",
-        n:4,
-        scheme: "blues",
-        label: "Misdrijven per wijk",
-        legend: true
-    },
-    marks: [
-        Plot.geo(geoData.features, { fill: (d) => d.properties.crimes}), // fill
-        Plot.geo(geoData.features), // edges
-        Plot.tip(geoData.features, Plot.pointer(Plot.geoCentroid({title: (d) => `${d.properties.name}: ${d.properties.crimes}`})))
-    ]
-})
+const domainCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
+let mainMapDomain = getDomainFromRange(domainCrimes, dates, selectedDates.length)
+
+mapCrimes = domainCrimes.selectMultiple(selectedDates).aggregate();
+mapCrimes = mapCrimes.groupByRegion().getTotal().split();
+const getMapPlot = mapPlot(mapCrimes, geoData, logScale, mainMapDomain);
 ```
 
 ```html
@@ -233,14 +215,14 @@ const getMapPlot = (width) => Plot.plot({
             criminaliteit het hoogst ligt in het centrum van de stad. Voor deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
         </p>
         <p>
-            We kunnen de slider gebruiken om de misdrijven te visualiseren doorheen de tijd. Dit zowel cummulatief, of exact voor een gegeven maand.    
+            We kunnen de slider gebruiken om de misdrijven te visualiseren voor een periode doorheen de tijd. Merk hierbij op dat de schaal niet veranderd wanneer de duur van de periode gelijk blijft.
+            Op deze manier kunnen we verschillende periodes vergelijken doorheen de tijd.
         </p>
     </div>
     <div>
         ${parkInput_mainMap}
         ${scaleInput}
-        ${cumulativeInput}
-        ${dateInput}
+        ${sliderInput}
         ${mapCategoryInput}
     </div>
 </div>
@@ -380,8 +362,121 @@ const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinne
 </div>
 ```
 
-## Covid
-TODO
-
 ## De ernst van misdrijven
+```js
+const baseCategories = [getLightCategories(), getMediumCategories(), getSevereCategories()];
+const resetBtn = Inputs.button("Reset", {value: baseCategories, reduce: () => (baseCategories)})
+const resetCategories = Generators.input(resetBtn)
+```
+
+```js
+const tableData = categories.map((value) => ({"Misdrijf": value}))
+
+// light
+const lightTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[0].includes(o.Misdrijf)), required: false});
+const lightTableSelection = Generators.input(lightTableInput);
+
+// medium
+const mediumTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[1].includes(o.Misdrijf)), required: false});
+const mediumTableSelection = Generators.input(mediumTableInput);
+
+// severe
+const severeTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[2].includes(o.Misdrijf)), required: false});
+const severeTableSelection = Generators.input(severeTableInput); 
+```
+
+```js
+const lightCrimes = lightTableSelection.map((o) => (o.Misdrijf))
+const mediumCrimes = mediumTableSelection.map((o) => (o.Misdrijf))
+const severeCrimes = severeTableSelection.map((o) => (o.Misdrijf))
+```
+
+```js
+function getCrimeData(crimeData, cats){
+    let selectedData = new Query(crimeData).filterByCategories(cats).groupByRegion().getTotal().split();
+    if (cats.length == 0){
+        // Nothing is selected
+        selectedData.values = new Array(selectedData.keys.length).fill(0)
+    }
+    return selectedData
+}
+```
+
+```js
+// create the domain ranges so that all the maps legends are the same
+let minCrimesSeverity = Infinity;
+let maxCrimesSeverity = -Infinity;
+let selectedCategories = lightCrimes.concat(mediumCrimes).concat(severeCrimes);
+let totalCrimes = new Query(crimeData).filterByCategories(selectedCategories).groupByRegion().getTotal().split();
+let categoryMin = Math.min(...totalCrimes.values);
+let categoryMax = Math.max(...totalCrimes.values);
+minCrimesSeverity = Math.min(minCrimesSeverity, categoryMin);
+maxCrimesSeverity = Math.max(maxCrimesSeverity, categoryMax);
+
+const domain = [minCrimesSeverity, maxCrimesSeverity]
+```
+
+```js
+const mapLight = mapPlot(
+    getCrimeData(crimeData, lightCrimes),
+    geoData,
+    true,
+    domain
+)
+```
+```js
+const mapMedium = mapPlot(
+    getCrimeData(crimeData, mediumCrimes),
+    geoData,
+    true,
+    domain
+)
+```
+```js
+const mapSevere = mapPlot(
+    getCrimeData(crimeData, severeCrimes),
+    geoData,
+    true,
+    domain
+)
+```
+
+```html
+Bij het bekijken van criminaliteitcijfers is het interessant om een vergelijking te maken tussen de ernstigheid van de misdrijven. We willen steeds dat het merendeel van de misdrijven slechts een licht misdrijf zijn en dat ernstige misdrijven slechts uitzonderlijk voorkomen.
+```
+```html
+In onderstaande visualisatie tonen we juist dat. We hebben een rangschikking gemaakt in de categorieën van licht naar ernstig. De tabel laat toe om deze rangschikking te wijzigen.
+
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Licht misdrijf</h4>
+        ${lightTableInput}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Gematigd misdrijf</h4>
+        ${mediumTableInput}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Ernstig misdrijf</h4>
+        ${severeTableInput}
+    </div>
+</div>
+```
+```html
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapLight(width))}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapMedium(width))}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapSevere(width))}
+    </div>
+</div>
+```
+```html
+Herstel de rangschikking: ${resetBtn}
+```
+## Covid
 TODO
