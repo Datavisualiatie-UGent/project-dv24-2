@@ -5,10 +5,12 @@ theme: air
 # Criminaliteitscijfers Gent
 Brent Matthys, Warre Provoost en Mats Van Belle
 ***
-
-Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de [dataset van Criminaliteitscijfers in Gent](https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers) te visualiseren.
-
-Voor de visualisaties maken we voornamelijk gebruik van [observable plot](https://observablehq.com/plot/) en waar nodig vullen we dit aan met [d3](https://d3js.org/).
+```html
+    Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de <a href=https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers>dataset van Criminaliteitscijfers in Gent</a> te visualiseren.
+</p>
+    Voor de visualisaties maken we voornamelijk gebruik van <a href=https://observablehq.com/plot/>observable plot</a> en waar nodig vullen we dit aan met <a href=https://d3js.org/>d3</a>.
+</p>
+```
 
 ```js
 // imports 
@@ -211,7 +213,8 @@ const getMapPlot = mapPlot(mapCrimes, geoData, logScale, mainMapDomain);
             criminaliteit het hoogst ligt in het centrum van de stad. Voor deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
         </p>
         <p>
-            We kunnen de slider gebruiken om de misdrijven te visualiseren doorheen de tijd. Dit zowel cummulatief, of exact voor een gegeven maand.    
+            We kunnen de slider gebruiken om de misdrijven te visualiseren voor een periode doorheen de tijd. Merk hierbij op dat de schaal niet veranderd wanneer de duur van de periode gelijk blijft.
+            Op deze manier kunnen we verschillende periodes vergelijken doorheen de tijd.
         </p>
     </div>
     <div>
@@ -389,6 +392,11 @@ const mapSevere = mapPlot(
 ```
 
 ```html
+Bij het bekijken van criminaliteitcijfers is het interessant om een vergelijking te maken tussen de ernstigheid van de misdrijven. We willen steeds dat het merendeel van de misdrijven slechts een licht misdrijf zijn en dat ernstige misdrijven slechts uitzonderlijk voorkomen.
+```
+```html
+In onderstaande visualisatie tonen we juist dat. We hebben een rangschikking gemaakt in de categorieën van licht naar ernstig. De tabel laat toe om deze rangschikking te wijzigen.
+
 <div class="grid grid-cols-3">
     <div class="grid-colspan-1 grid-rowspan-2">
         <h4>Licht misdrijf</h4>
@@ -418,7 +426,7 @@ const mapSevere = mapPlot(
 </div>
 ```
 ```html
-${resetBtn}
+Herstel de rangschikking: ${resetBtn}
 ```
 TODO
 ## Gentse feesten
