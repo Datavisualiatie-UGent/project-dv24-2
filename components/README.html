@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Queries.js | dv24-2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="../_observablehq/theme-air,slate.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="../_observablehq/theme-air,slate.css">
+<link rel="modulepreload" href="../_observablehq/client.js">
+<link rel="modulepreload" href="../_observablehq/runtime.js">
+<link rel="modulepreload" href="../_observablehq/stdlib.js">
+<script type="module">
+
+import "../_observablehq/client.js";
+
+</script>
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type), h2:first-child, :not(h1) + h2">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#query-class">Query-class</a></li>
+<li class="observablehq-secondary-link"><a href="#get-methods">get-methods</a></li>
+</ol>
+</nav>
+</aside>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="queries.js" tabindex="-1"><a class="observablehq-header-anchor" href="#queries.js">Queries.js</a></h1>
+<p>The queries.js file includes a lot of tools that help with querying the crime dataset.
+The file includes a few hardcoded <a href="#get-methods">getter-functions</a> and a generic <a href="#query-class">Query-class</a> to query the crime_data.</p>
+<h2 id="query-class" tabindex="-1"><a class="observablehq-header-anchor" href="#query-class">Query-class</a></h2>
+<p>The queries.js includes a query-class to easily query the crime dataset. Because most query-class-functions also return a new query-class-object, we can easily chain these query commands.
+This should increase readability in the final code, which should already be shown. It is however very important to know the underlying structure of the query-class to easily know what we are doing and how we are manipulating the data.
+This documentation will provide a detailed overview of all the methods in the query-class, what they do, and how we can use them with some example code.</p>
+<p><strong>Table of contents</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#query">Query()</a></td>
+<td>Create a new query with the data (constructor).</td>
+</tr>
+<tr>
+<td><a href="#groupByRegion">groupByRegion()</a></td>
+<td>Group the data by region.</td>
+</tr>
+<tr>
+<td><a href="#groupByCategory">groupByCategory()</a></td>
+<td>Group the data by category.</td>
+</tr>
+<tr>
+<td><a href="#groupByYear">groupByYear()</a></td>
+<td>Group the data by year.</td>
+</tr>
+<tr>
+<td><a href="#groupByMonth">groupByMonth()</a></td>
+<td>Group the data by month.</td>
+</tr>
+<tr>
+<td><a href="#filterByRegion">filterByRegion()</a></td>
+<td>Filter the query by region.</td>
+</tr>
+<tr>
+<td><a href="#filterByCategory">filterByCategory()</a></td>
+<td>Filter the query by category.</td>
+</tr>
+<tr>
+<td><a href="#filterByYear">filterByYear()</a></td>
+<td>Filter the query by year.</td>
+</tr>
+<tr>
+<td><a href="#filterByMonth">filterByMonth()</a></td>
+<td>Filter the query by month.</td>
+</tr>
+<tr>
+<td><a href="#filterBy">filterBy()</a></td>
+<td>Filter the query by a given filter function.</td>
+</tr>
+<tr>
+<td><a href="#filterMin">filterMin()</a></td>
+<td>Filter the result to only include the entries with the minimum total.</td>
+</tr>
+<tr>
+<td><a href="#filterMax">filterMax()</a></td>
+<td>Filter the result to only include the entries with the maximum total.</td>
+</tr>
+<tr>
+<td><a href="#getTotal">getTotal()</a></td>
+<td>Calculate the total amount of crimes.</td>
+</tr>
+<tr>
+<td><a href="#getCount">getCount()</a></td>
+<td>Calculate the total amount of entries.</td>
+</tr>
+<tr>
+<td><a href="#getAverage">getAverage()</a></td>
+<td>Calculate the average amount of crimes.</td>
+</tr>
+<tr>
+<td><a href="#split">split()</a></td>
+<td>Split a grouped object in a key and value array.</td>
+</tr>
+<tr>
+<td><a href="#result">result()</a></td>
+<td>Acquire the result of the query.</td>
+</tr>
+<tr>
+<td><a href="#aggregate">aggregate()</a></td>
+<td>Aggregate the outer group back into the query result.</td>
+</tr>
+<tr>
+<td><a href="#select">select()</a></td>
+<td>Select a single group from the different options in the map.</td>
+</tr>
+<tr>
+<td><a href="#selectMultiple">selectMultiple()</a></td>
+<td>Select multiple groups from the different options in the map.</td>
+</tr>
+<tr>
+<td><a href="#delete">delete()</a></td>
+<td>Delete a single group from the different options in the map.</td>
+</tr>
+<tr>
+<td><a href="#deleteMultiple">deleteMultiple()</a></td>
+<td>Delete multiple groups from the different options in the map.</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+<h3 id="query()" tabindex="-1"><a class="observablehq-header-anchor" href="#query()">Query()</a></h3>
+<p>Create a new query with the data. Constructor of the Query-class.</p>
+<p>This constructor is always used to initialize a query and will require the basic crime_data 99% of the time.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[data, final: boolean]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example" tabindex="-1"><a class="observablehq-header-anchor" href="#example">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="groupbyregion()" tabindex="-1"><a class="observablehq-header-anchor" href="#groupbyregion()">groupByRegion()</a></h3>
+<p>Group the data by region.</p>
+<p>This means that we change the data of the query to a json-object that maps the regions acquired from the <a href="#getregions">getRegions()</a> method to a filtered query that only includes entries with the given region.</p>
+<p><em>This method can handle grouped queries and will group inside previous groups.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-1" tabindex="-1"><a class="observablehq-header-anchor" href="#example-1">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="groupbycategory()" tabindex="-1"><a class="observablehq-header-anchor" href="#groupbycategory()">groupByCategory()</a></h3>
+<p>Group the data by category.</p>
+<p>This means that we change the data of the query to a json-object that maps the regions acquired from the <a href="#getcategories">getCategories()</a> method to a filtered query that only includes entries with the given category.</p>
+<p><em>This method can handle grouped queries and will group inside previous groups.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-2" tabindex="-1"><a class="observablehq-header-anchor" href="#example-2">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="groupbyyear()" tabindex="-1"><a class="observablehq-header-anchor" href="#groupbyyear()">groupByYear()</a></h3>
+<p>Group the data by year.</p>
+<p>This means that we change the data of the query to a json-object that maps the regions acquired from the <a href="#getyears">getYears()</a> method to a filtered query that only includes entries from the given year.</p>
+<p><em>This method can handle grouped queries and will group inside previous groups.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-3" tabindex="-1"><a class="observablehq-header-anchor" href="#example-3">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="groupbymonth()" tabindex="-1"><a class="observablehq-header-anchor" href="#groupbymonth()">groupByMonth()</a></h3>
+<p>Group the data by month.</p>
+<p>This means that we change the data of the query to a json-object that maps the regions acquired from the <a href="#getmonths">getMonths()</a> method to a filtered query that only includes entries from the given month.</p>
+<p><em>This method can handle grouped queries and will group inside previous groups.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-4" tabindex="-1"><a class="observablehq-header-anchor" href="#example-4">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="filterbyregion()" tabindex="-1"><a class="observablehq-header-anchor" href="#filterbyregion()">filterByRegion()</a></h3>
+<p>Filter the query by region.</p>
+<p>This means that we only keep the entries where the region matches our given region.
+You can take a look at the different regions <a href="#getregions">here</a>.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><em>This method can handle grouped queries and will filter per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[region: string]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-5" tabindex="-1"><a class="observablehq-header-anchor" href="#example-5">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="filterbycategory()" tabindex="-1"><a class="observablehq-header-anchor" href="#filterbycategory()">filterByCategory()</a></h3>
+<p>Filter the query by category.</p>
+<p>This means that we only keep the entries where the category matches our given category.
+You can take a look at the different categories <a href="#getcategories">here</a>.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><em>This method can handle grouped queries and will filter per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[category: string]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-6" tabindex="-1"><a class="observablehq-header-anchor" href="#example-6">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="filterbyyear()" tabindex="-1"><a class="observablehq-header-anchor" href="#filterbyyear()">filterByYear()</a></h3>
+<p>Filter the query by year.</p>
+<p>This means that we only keep the entries where the year matches our given year.
+You can take a look at the different years <a href="#getyears">here</a>.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><em>This method can handle grouped queries and will filter per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[year: number]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-7" tabindex="-1"><a class="observablehq-header-anchor" href="#example-7">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="filterbymonth()" tabindex="-1"><a class="observablehq-header-anchor" href="#filterbymonth()">filterByMonth()</a></h3>
+<p>Filter the query by month.</p>
+<p>This means that we only keep the entries where the month matches our given month.
+You can take a look at the different months <a href="#getmonths">here</a>.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><em>This method can handle grouped queries and will filter per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[month: string]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-8" tabindex="-1"><a class="observablehq-header-anchor" href="#example-8">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="filterby()" tabindex="-1"><a class="observablehq-header-anchor" href="#filterby()">filterBy()</a></h3>
+<p>Filter the query by a given filter function.</p>
+<p>This means that we only keep the entries where the objects match those for which the filter function returns true.</p>
+<p><em>This method can handle grouped queries and will filter per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[filter_function: Function (obj: Object) =&gt; bool ]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-9" tabindex="-1"><a class="observablehq-header-anchor" href="#example-9">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (10:0)</div>
+</div>
+<h3 id="filtermin()" tabindex="-1"><a class="observablehq-header-anchor" href="#filtermin()">filterMin()</a></h3>
+<p>Filter the query to only include entries with the lowest total.</p>
+<p>This means that we only keep the entries where the total is minimal.</p>
+<p><em>This method can handle grouped queries and will take the minimal entries per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-10" tabindex="-1"><a class="observablehq-header-anchor" href="#example-10">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="filtermax()" tabindex="-1"><a class="observablehq-header-anchor" href="#filtermax()">filterMax()</a></h3>
+<p>Filter the query to only include entries with the highest total.</p>
+<p>This means that we only keep the entries where the total is maximal.</p>
+<p><em>This method can handle grouped queries and will take the maximal entries per group.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-11" tabindex="-1"><a class="observablehq-header-anchor" href="#example-11">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="gettotal()" tabindex="-1"><a class="observablehq-header-anchor" href="#gettotal()">getTotal()</a></h3>
+<p>Calculate the total amount of crimes.</p>
+<p>This means that we take the sum of the total crimes in the query.</p>
+<p><em>This method can handle grouped queries and will calculate the total per group.</em></p>
+<p><strong>!!!</strong> <em>This method will finalize the query, meaning it can not be extended anymore.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-12" tabindex="-1"><a class="observablehq-header-anchor" href="#example-12">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="getcount()" tabindex="-1"><a class="observablehq-header-anchor" href="#getcount()">getCount()</a></h3>
+<p>Calculate the total amount of entries.</p>
+<p>This means that we take the length of the array.</p>
+<p><em>This method can handle grouped queries and will calculate the count per group.</em></p>
+<p><strong>!!!</strong> <em>This method will finalize the query, meaning it can not be extended anymore.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-13" tabindex="-1"><a class="observablehq-header-anchor" href="#example-13">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="getaverage()" tabindex="-1"><a class="observablehq-header-anchor" href="#getaverage()">getAverage()</a></h3>
+<p>Calculate the average amount of crimes per entry.</p>
+<p>This means that we will just divide the <a href="#gettotal">total</a> with the <a href="#getcount">count</a>.</p>
+<p><em>This method can handle grouped queries and will calculate the average per group.</em></p>
+<p><strong>!!!</strong> <em>This method will finalize the query, meaning it can not be extended anymore.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Query-class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-14" tabindex="-1"><a class="observablehq-header-anchor" href="#example-14">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="split()" tabindex="-1"><a class="observablehq-header-anchor" href="#split()">split()</a></h3>
+<p>Split a grouped object in a key and value array.</p>
+<p>This is mainly used to end the query. For basic visualizations it could be interesting to acquire 2 different arrays: for example for the x and y axis.</p>
+<p><strong>This method requires a grouped query and will throw an error otherwise.</strong></p>
+<p><strong>!!!</strong> <em>This method does not return a Query-class and is thus finalised.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object{keys:Array&lt;string&gt;, values:Array&lt;Object&gt;}</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-15" tabindex="-1"><a class="observablehq-header-anchor" href="#example-15">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="result()" tabindex="-1"><a class="observablehq-header-anchor" href="#result()">result()</a></h3>
+<p>Returns the result of the query.</p>
+<p>This is mainly used to end the query. It just returns what's in the data field of the Query.
+It is mainly syntactic sugar.</p>
+<p><strong>!!!</strong> <em>This method does not return a Query-class and is thus finalised.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-16" tabindex="-1"><a class="observablehq-header-anchor" href="#example-16">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="aggregate()" tabindex="-1"><a class="observablehq-header-anchor" href="#aggregate()">aggregate()</a></h3>
+<p>Aggregate the outer group back into the query result.</p>
+<p>This can be used to merge group keys and to un-finalize grouped final queries by re-introducing them as totals.
+It can also undo a previous grouping operation.</p>
+<p><strong>This method requires a grouped query and will throw an error otherwise.</strong></p>
+<p><strong>!!!</strong> <em>This method will un-finalize some finalised queries and can be a bit confusing.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>[keyWhenNumber: string, combineFunction: Function (outerKey: string, innerKey: string) =&gt; string]</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object</td>
+</tr>
+</tbody>
+</table>
+<p>Both parameters have default values:</p>
+<p><code>keyWhenNumber = "key"</code></p>
+<p><code>combineFunction = (outerKey, innerKey) =&gt; '${outerKey} - ${innerKey}'</code>)</p>
+<h4 id="example-17" tabindex="-1"><a class="observablehq-header-anchor" href="#example-17">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="select()" tabindex="-1"><a class="observablehq-header-anchor" href="#select()">select()</a></h3>
+<p>Select a single group from the different options in the map.</p>
+<p>This is mainly used to end the query when working with aggregated group keys. Selecting after a normal groupBy is the same as filterBy.</p>
+<p><strong>This method requires a grouped query and will throw an error otherwise.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>entry: Key</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-18" tabindex="-1"><a class="observablehq-header-anchor" href="#example-18">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="selectmultiple()" tabindex="-1"><a class="observablehq-header-anchor" href="#selectmultiple()">selectMultiple()</a></h3>
+<p>Select multiple groups from the different options in the map.</p>
+<p>This is used for when we only want to work with a part of the dataset.
+This does not combine the data back into a single array but only keeps the selected object keys, that way this function also works on doubly-grouped Queries.
+When you want to combine the data back you can take a look at the <a href="#aggregate">aggregate</a> function.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><strong>This method requires a grouped query and will throw an error otherwise.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>entries: Array&lt;Key&gt;</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-19" tabindex="-1"><a class="observablehq-header-anchor" href="#example-19">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="delete()" tabindex="-1"><a class="observablehq-header-anchor" href="#delete()">delete()</a></h3>
+<p>Delete a single group from the different options in the map.</p>
+<p>This is mainly used to ignore a group when working with aggregated group keys.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><strong>This method requires a grouped query and will throw an error otherwise.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>entry: Key</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-20" tabindex="-1"><a class="observablehq-header-anchor" href="#example-20">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h3 id="deletemultiple()" tabindex="-1"><a class="observablehq-header-anchor" href="#deletemultiple()">deleteMultiple()</a></h3>
+<p>Delete multiple groups from the different options in the map.</p>
+<p>This is mainly used to ignore some groups when working with aggregated group keys.
+For more complex filtering options you can also look at the <a href="#filterBy">filterBy</a> method.</p>
+<p><strong>This method requires a grouped query and will throw an error otherwise.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>entries: Array&lt;Key&gt;</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Object</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-21" tabindex="-1"><a class="observablehq-header-anchor" href="#example-21">Example</a></h4>
+<div class="observablehq observablehq--block">
+  <div class="observablehq--inspect observablehq--error">SyntaxError: Unexpected token (8:0)</div>
+</div>
+<h2 id="get-methods" tabindex="-1"><a class="observablehq-header-anchor" href="#get-methods">get-methods</a></h2>
+<p>The queries.js file includes a few basic and hardcoded get-methods about the specific dataset we are working with.
+They are included for easy usage within and outside of the <a href="#query-class">Query-class</a> without the need of asking about the dataset at execution time.
+This also solves the problem for when the data entries are limited after querying and do not include entries with corresponding data.
+These methods keep the program consistent.</p>
+<p><strong>Table of contents</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#getregions">getRegions()</a></td>
+<td>Get a list of all the regions of Ghent.</td>
+</tr>
+<tr>
+<td><a href="#getcategories">getCategories()</a></td>
+<td>Get a list of all the crime categories.</td>
+</tr>
+<tr>
+<td><a href="#getyears">getYears()</a></td>
+<td>Get a list of all the years.</td>
+</tr>
+<tr>
+<td><a href="#getmonths">getMonths()</a></td>
+<td>Get a list of all the months.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="getregions()" tabindex="-1"><a class="observablehq-header-anchor" href="#getregions()">getRegions()</a></h3>
+<p>Returns a list of all the regions of Ghent. The complete list of regions is shown below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Array&lt;string&gt;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Complete list of regions.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Muide - Meulestede - Afrikalaan</td>
+</tr>
+<tr>
+<td>Binnenstad</td>
+</tr>
+<tr>
+<td>Bloemekenswijk</td>
+</tr>
+<tr>
+<td>Drongen</td>
+</tr>
+<tr>
+<td>Elisabethbegijnhof - Prinsenhof - Papegaai - Sint-Michiels</td>
+</tr>
+<tr>
+<td>Ledeberg</td>
+</tr>
+<tr>
+<td>Mariakerke</td>
+</tr>
+<tr>
+<td>Onbekend</td>
+</tr>
+<tr>
+<td>Rabot - Blaisantvest</td>
+</tr>
+<tr>
+<td>Gentbrugge</td>
+</tr>
+<tr>
+<td>Moscou - Vogelhoek</td>
+</tr>
+<tr>
+<td>Nieuw Gent - UZ</td>
+</tr>
+<tr>
+<td>Sint-Denijs-Westrem - Afsnee</td>
+</tr>
+<tr>
+<td>Sluizeken - Tolhuis - Ham</td>
+</tr>
+<tr>
+<td>Watersportbaan - Ekkergem</td>
+</tr>
+<tr>
+<td>Gentse Kanaaldorpen en -zone</td>
+</tr>
+<tr>
+<td>Sint-Amandsberg</td>
+</tr>
+<tr>
+<td>Stationsbuurt Zuid</td>
+</tr>
+<tr>
+<td>Brugse Poort - Rooigem</td>
+</tr>
+<tr>
+<td>Dampoort</td>
+</tr>
+<tr>
+<td>Macharius - Heirnis</td>
+</tr>
+<tr>
+<td>Oostakker</td>
+</tr>
+<tr>
+<td>Wondelgem</td>
+</tr>
+<tr>
+<td>Stationsbuurt Noord</td>
+</tr>
+<tr>
+<td>Oud Gentbrugge</td>
+</tr>
+<tr>
+<td>Zwijnaarde</td>
+</tr>
+</tbody>
+</table>
+<h3 id="getcategories()" tabindex="-1"><a class="observablehq-header-anchor" href="#getcategories()">getCategories()</a></h3>
+<p>Returns a list of all the crime categories in the dataset. The complete list is shown below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Array&lt;string&gt;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Complete list of regions.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Diefstal gewapenderhand</td>
+</tr>
+<tr>
+<td>Diefstal met geweld zonder wapen</td>
+</tr>
+<tr>
+<td>Geluidshinder</td>
+</tr>
+<tr>
+<td>Sluikstorten</td>
+</tr>
+<tr>
+<td>Woninginbraak</td>
+</tr>
+<tr>
+<td>Zakkenrollerij</td>
+</tr>
+<tr>
+<td>Fietsdiefstal</td>
+</tr>
+<tr>
+<td>Motordiefstal</td>
+</tr>
+<tr>
+<td>Parkeerovertredingen</td>
+</tr>
+<tr>
+<td>Beschadiging aan auto</td>
+</tr>
+<tr>
+<td>Diefstal uit of aan voertuigen</td>
+</tr>
+<tr>
+<td>Graffiti</td>
+</tr>
+<tr>
+<td>Inbraak in bedrijf of handelszaak</td>
+</tr>
+<tr>
+<td>Bromfietsdiefstal</td>
+</tr>
+<tr>
+<td>Autodiefstal</td>
+</tr>
+<tr>
+<td>Verkeersongevallen met lichamelijk letsel</td>
+</tr>
+</tbody>
+</table>
+<h3 id="getyears()" tabindex="-1"><a class="observablehq-header-anchor" href="#getyears()">getYears()</a></h3>
+<p>Returns a list of all the years in the dataset. The complete list is shown below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Array&lt;number&gt;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Complete list of years.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2018</td>
+</tr>
+<tr>
+<td>2019</td>
+</tr>
+<tr>
+<td>2020</td>
+</tr>
+<tr>
+<td>2021</td>
+</tr>
+<tr>
+<td>2022</td>
+</tr>
+<tr>
+<td>2023</td>
+</tr>
+</tbody>
+</table>
+<h3 id="getmonths()" tabindex="-1"><a class="observablehq-header-anchor" href="#getmonths()">getMonths()</a></h3>
+<p>Returns a list of all the months in the dataset. The complete list is shown below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>(none)</td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td>Array&lt;string&gt;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Complete list of months.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>januari</td>
+</tr>
+<tr>
+<td>februari</td>
+</tr>
+<tr>
+<td>maart</td>
+</tr>
+<tr>
+<td>april</td>
+</tr>
+<tr>
+<td>mei</td>
+</tr>
+<tr>
+<td>juni</td>
+</tr>
+<tr>
+<td>juli</td>
+</tr>
+<tr>
+<td>augustus</td>
+</tr>
+<tr>
+<td>september</td>
+</tr>
+<tr>
+<td>oktober</td>
+</tr>
+<tr>
+<td>november</td>
+</tr>
+<tr>
+<td>december</td>
+</tr>
+</tbody>
+</table>
+</main>
+<footer id="observablehq-footer">
+<div>Built with <a href="https://observablehq.com/" target="_blank">Observable</a> on <a title="2024-05-11T10:52:49">May 11, 2024</a>.</div>
+</footer>
+</div>

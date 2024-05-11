@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Criminaliteitscijfers Gent | dv24-2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="modulepreload" href="./_observablehq/client.js">
+<link rel="modulepreload" href="./_observablehq/runtime.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.js">
+<link rel="modulepreload" href="./_import/data/crimes/crimeData.255b44b5.js">
+<link rel="modulepreload" href="./_import/data/geometry/geometryData.e06e2793.js">
+<link rel="modulepreload" href="./_import/components/cityMap.9b5aa3c3.js">
+<link rel="modulepreload" href="./_import/components/lineChart.15ba6603.js">
+<link rel="modulepreload" href="./_import/components/barChart.36437f56.js">
+<link rel="modulepreload" href="./_import/components/parallel.e68d4872.js">
+<link rel="modulepreload" href="./_import/components/queries.b1d4624b.js">
+<link rel="modulepreload" href="./_import/components/mapPlot.2272eeee.js">
+<link rel="modulepreload" href="./_import/components/intervalSlider.b52f8365.js">
+<link rel="modulepreload" href="./_npm/echarts@5.5.0/dist/echarts.esm.min.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/+esm.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/+esm.js">
+<link rel="modulepreload" href="./_import/.observablehq/cache/_npm/echarts@5.5.0/dist/echarts.esm.min.ca2709d0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/+esm.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/+esm.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/+esm.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/+esm.js">
+<script type="module">
+
+import {define} from "./_observablehq/client.js";
+import {registerFile} from "./_observablehq/stdlib.js";
+
+registerFile("./data/crimes/crime_data.json", {"name":"./data/crimes/crime_data.json","mimeType":"application/json","path":"./_file/data/crimes/crime_data.879a7883.json"});
+registerFile("./data/geometry/geometry_data.json", {"name":"./data/geometry/geometry_data.json","mimeType":"application/json","path":"./_file/data/geometry/geometry_data.426cacb2.json"});
+
+define({id: "2977cdbe", inputs: ["html","display"], body: async (html,display) => {
+display(await(
+html.fragment`<div>
+    Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de <a href="https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers">dataset van Criminaliteitscijfers in Gent</a> te visualiseren.
+    </br> </br>
+    Voor de visualisaties maken we voornamelijk gebruik van <a href="https://observablehq.com/plot/">observable plot</a> en waar nodig vullen we dit aan met <a href="https://d3js.org/">d3</a>.
+</div>`
+))
+}});
+
+define({id: "289f5e18", outputs: ["loadCrimeData","loadGeometryData","cityNj","cityMap","lineChart","barChart","parallel","Query","getMonths","getYears","getCategories","getRegions","getLightCategories","getMediumCategories","getSevereCategories","mapPlot","getDomainFromRange","interval","echarts","svg","d3"], body: async () => {
+const [{loadCrimeData}, {loadGeometryData}, {cityNj, cityMap}, {lineChart}, {barChart}, {parallel}, {Query, getMonths, getYears, getCategories, getRegions, getLightCategories, getMediumCategories, getSevereCategories}, {mapPlot, getDomainFromRange}, {interval}, echarts, {svg}, d3] = await Promise.all([import("./_import/data/crimes/crimeData.255b44b5.js"), import("./_import/data/geometry/geometryData.e06e2793.js"), import("./_import/components/cityMap.9b5aa3c3.js"), import("./_import/components/lineChart.15ba6603.js"), import("./_import/components/barChart.36437f56.js"), import("./_import/components/parallel.e68d4872.js"), import("./_import/components/queries.b1d4624b.js"), import("./_import/components/mapPlot.2272eeee.js"), import("./_import/components/intervalSlider.b52f8365.js"), import("./_npm/echarts@5.5.0/dist/echarts.esm.min.js"), import("./_npm/htl@0.3.1/+esm.js"), import("./_npm/d3@7.9.0/+esm.js")]);
+// imports 
+
+// data
+
+// components
+
+// misc
+
+return {loadCrimeData,loadGeometryData,cityNj,cityMap,lineChart,barChart,parallel,Query,getMonths,getYears,getCategories,getRegions,getLightCategories,getMediumCategories,getSevereCategories,mapPlot,getDomainFromRange,interval,echarts,svg,d3};
+}});
+
+define({id: "8ae89255", inputs: ["loadCrimeData","loadGeometryData","getMonths","getYears","getCategories","getRegions"], outputs: ["crimeData","geoData","months","years","categories","regions","categoryDefault","regionDefault","categoryCats","regionCats"], body: async (loadCrimeData,loadGeometryData,getMonths,getYears,getCategories,getRegions) => {
+// load data
+const crimeData = await loadCrimeData();
+const geoData = await loadGeometryData();
+geoData.features.forEach((g) => {
+    // coordinates are inside out, so reverse them
+    g.geometry.coordinates[0] = g.geometry.coordinates[0].reverse()
+})
+
+// basic data
+const months = getMonths();
+const years = getYears();
+const categories = getCategories();
+const regions = getRegions();
+const categoryDefault = "Alle misdrijven"
+const regionDefault = "Alle wijken"
+const categoryCats = [categoryDefault].concat(categories)
+const regionCats = [regionDefault].concat(regions)
+return {crimeData,geoData,months,years,categories,regions,categoryDefault,regionDefault,categoryCats,regionCats};
+}});
+
+define({id: "018b3300", inputs: ["Inputs","Generators"], outputs: ["parkInput_dataset","showPark_dataset"], body: (Inputs,Generators) => {
+const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen", value: true})
+const showPark_dataset = Generators.input(parkInput_dataset);
+return {parkInput_dataset,showPark_dataset};
+}});
+
+define({id: "74bfb64c", inputs: ["Query","crimeData","showPark_dataset"], outputs: ["baseQuery"], body: (Query,crimeData,showPark_dataset) => {
+var baseQuery = new Query(crimeData).groupByCategory();
+if(!showPark_dataset){
+    baseQuery = baseQuery.delete("Parkeerovertredingen");
+}
+baseQuery = baseQuery.aggregate("category");
+return {baseQuery};
+}});
+
+define({id: "edad4182", inputs: ["baseQuery"], outputs: ["categoricalCrimes","regionCrimes","yearCrimes","monthCrimes"], body: (baseQuery) => {
+let categoricalCrimes = baseQuery.groupByCategory().getTotal().aggregate("category").result().map(({category, total}) => ({categorie: category, totaal: total}));
+let regionCrimes = baseQuery.groupByRegion().getTotal().aggregate("region").result().map(({region, total}) => ({wijk: region, totaal: total}));
+let yearCrimes = baseQuery.groupByYear().getTotal().aggregate("year").result().map(({year, total}) => ({jaar: year, totaal: total}));
+let monthCrimes = baseQuery.groupByMonth().getTotal().aggregate("month").result().map(({month, total}) => ({maand: month, totaal: total}));
+return {categoricalCrimes,regionCrimes,yearCrimes,monthCrimes};
+}});
+
+define({id: "2d89a191", inputs: ["barChart","categoricalCrimes","regionCrimes","yearCrimes","monthCrimes","months"], outputs: ["getCategoryPlot","getRegionPlot","getYearPlot","getMonthPlot"], body: (barChart,categoricalCrimes,regionCrimes,yearCrimes,monthCrimes,months) => {
+const getCategoryPlot = barChart(categoricalCrimes, "categorie", "totaal", "Categorie", "Aantal misdrijven", []);
+const getRegionPlot = barChart(regionCrimes, "wijk", "totaal", "Wijk", "Aantal misdrijven", []);
+const getYearPlot = barChart(yearCrimes, "jaar", "totaal", "Jaar", "Aantal misdrijven", []);
+const getMonthPlot = barChart(monthCrimes, "maand", "totaal", "Maand", "Aantal misdrijven", months);
+return {getCategoryPlot,getRegionPlot,getYearPlot,getMonthPlot};
+}});
+
+define({id: "a9ea1663", inputs: ["html","parkInput_dataset","getCategoryPlot","display"], body: async (html,parkInput_dataset,getCategoryPlot,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-3">
+  <div class="grid-colspan-1">
+        <p>
+            Sinds 2018 maakt Stad Gent criminaliteitscijfers beschikbaar. Voor elke maand geeft de dataset het aantal misdrijven in elke wijk voor de gegeven categorieën.
+        </p>
+        <p>
+            In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
+        </p>
+        <p>
+            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
+        </p>
+        <div>
+            <i>Klik me!</i>
+            ${parkInput_dataset}
+        </div>
+  </div>
+  <div class="grid-colspan-2">
+        <h4>Aantal misdrijven per categorie</h4>
+        ${getCategoryPlot}
+  </div>
+</div>`
+))
+}});
+
+define({id: "8565a27e", inputs: ["html","getRegionPlot","display"], body: async (html,getRegionPlot,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-3">
+  <div class="grid-colspan-2">
+      <h4>Aantal misdrijven per regio</h4>
+      ${getRegionPlot}
+  </div>
+  <div class="grid-colspan-1">
+      <p>
+          Bekijk zeker ook de 3 andere plots voor een ruimer beeld van de dataset. Het is bijvoorbeeld duidelijk dat, alhoewel de criminaleit redelijk constant blijft doorheen de tijd, we wel een onevenwicht hebben tussen de regio's.
+      </p>
+      <p>
+          Op de figuur links zien we bijvoorbeeld dat het merendeel van de misdrijven in de binnenstad plaatsvindt. Dit kan te maken hebben met het aantal inwoners, een strengere controle of omdat de binnenstad gewoonweg een populaire locatie is. Wat de reden ook kan zijn, het kan belangrijk zijn om deze nuance in je achterhoofd te houden.
+      </p>
+  </div>
+</div>`
+))
+}});
+
+define({id: "84d8250a", inputs: ["html","getYearPlot","getMonthPlot","display"], body: async (html,getYearPlot,getMonthPlot,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-2">
+  <div class="grid-colspan-1">
+      <h4>Aantal misdrijven per jaar</h4>
+      ${getYearPlot}
+  </div>
+  <div class="grid-colspan-1">
+      <h4>Aantal misdrijven per maand</h4>
+      ${getMonthPlot}  
+  </div>
+</div>`
+))
+}});
+
+define({id: "64b7512f", inputs: ["years","months"], outputs: ["dates"], body: (years,months) => {
+let dates = [];
+for(let year of years){
+    for(let month of months){
+        dates.push(year + " - " + month);
+    }
+}
+// last 4 months of 2023 have no data
+dates = dates.slice(0, -4)
+return {dates};
+}});
+
+define({id: "86b98ef2", inputs: ["interval","dates","Generators","Inputs","categoryCats"], outputs: ["sliderInput","sliderValues","parkInput_mainMap","showPark_mainMap","scaleInput","logScale","mapCategoryInput","mapCategoryValue"], body: (interval,dates,Generators,Inputs,categoryCats) => {
+// Map inputs
+const sliderInput = interval(
+    [0, dates.length - 1],
+    {
+        step: 1,
+        value: [0, dates.length - 1],
+        label: 'Selecteer periode',
+        format: ([start, end]) => `${dates[start]} tem ${dates[end]}`
+    }
+)
+const sliderValues = Generators.input(sliderInput);
+
+const parkInput_mainMap = Inputs.toggle({label: "Toon parkeer overtredingen"});
+const showPark_mainMap = Generators.input(parkInput_mainMap);
+
+const scaleInput = Inputs.toggle({label: "Gebruik logaritmische schaal", value: true});
+const logScale = Generators.input(scaleInput);
+
+const mapCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
+const mapCategoryValue = Generators.input(mapCategoryInput);
+return {sliderInput,sliderValues,parkInput_mainMap,showPark_mainMap,scaleInput,logScale,mapCategoryInput,mapCategoryValue};
+}});
+
+define({id: "3802d6dd", inputs: ["sliderValues","dates"], outputs: ["splitVals","minIdx","maxIdx","minVal","maxVal","selectedDates"], body: (sliderValues,dates) => {
+const splitVals = sliderValues.split("-");
+const minIdx = parseInt(splitVals[0]);
+const maxIdx = parseInt(splitVals[1]) + 1;
+
+const minVal = dates[minIdx];
+const maxVal = dates[maxIdx];
+
+const selectedDates = dates.slice(minIdx, maxIdx);
+return {splitVals,minIdx,maxIdx,minVal,maxVal,selectedDates};
+}});
+
+define({id: "9a19c423", inputs: ["Query","crimeData","showPark_mainMap","mapCategoryValue","getDomainFromRange","dates","selectedDates","mapPlot","geoData","logScale"], outputs: ["mapCrimes","domainCrimes","mainMapDomain","getMapPlot"], body: (Query,crimeData,showPark_mainMap,mapCategoryValue,getDomainFromRange,dates,selectedDates,mapPlot,geoData,logScale) => {
+let mapCrimes = new Query(crimeData);
+// The map
+if(!showPark_mainMap){
+    mapCrimes = mapCrimes.groupByCategory().delete("Parkeerovertredingen").aggregate();
+}
+if(mapCategoryValue !== "Alle misdrijven"){
+    mapCrimes = mapCrimes.filterByCategory(mapCategoryValue);
+}
+const domainCrimes = mapCrimes.groupByYear().groupByMonth().aggregate();
+let mainMapDomain = getDomainFromRange(domainCrimes, dates, selectedDates.length)
+
+mapCrimes = domainCrimes.selectMultiple(selectedDates).aggregate();
+mapCrimes = mapCrimes.groupByRegion().getTotal().split();
+const getMapPlot = mapPlot(mapCrimes, geoData, logScale, mainMapDomain);
+return {mapCrimes,domainCrimes,mainMapDomain,getMapPlot};
+}});
+
+define({id: "2bc6f1f3", inputs: ["html","resize","getMapPlot","parkInput_mainMap","scaleInput","sliderInput","mapCategoryInput","display"], body: async (html,resize,getMapPlot,parkInput_mainMap,scaleInput,sliderInput,mapCategoryInput,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-3">
+
+    <div class="grid-colspan-2 grid-rowspan-2">
+        ${resize((width) => getMapPlot(width))}
+    </div>
+    <div class="grid-colspan-1">
+        <p>
+            Groot Gent bestaat uit 25 wijken, zoals te zien is op de kaart links.
+        </p>
+        <p>
+            Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Zelfs wanneer we de parkeerovertredingen niet in rekening brengen zien we dat
+            criminaliteit het hoogst ligt in het centrum van de stad. Voor deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
+        </p>
+        <p>
+            We kunnen de slider gebruiken om de misdrijven te visualiseren voor een periode doorheen de tijd. Merk hierbij op dat de schaal niet veranderd wanneer de duur van de periode gelijk blijft.
+            Op deze manier kunnen we verschillende periodes vergelijken doorheen de tijd.
+        </p>
+    </div>
+    <div>
+        ${parkInput_mainMap}
+        ${scaleInput}
+        ${sliderInput}
+        ${mapCategoryInput}
+    </div>
+</div>`
+))
+}});
+
+define({id: "bd5eca8f", inputs: ["Inputs","categoryCats","Generators","regionCats"], outputs: ["lineChartCategoryInput","lineChartCategoryValue","lineChartRegionInput","lineChartRegionValue"], body: (Inputs,categoryCats,Generators,regionCats) => {
+// Inputs
+const lineChartCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
+const lineChartCategoryValue = Generators.input(lineChartCategoryInput);
+const lineChartRegionInput = Inputs.select(regionCats, {value: "Alle wijken", label: "Selecteer wijk"});
+const lineChartRegionValue = Generators.input(lineChartRegionInput);
+return {lineChartCategoryInput,lineChartCategoryValue,lineChartRegionInput,lineChartRegionValue};
+}});
+
+define({id: "f452f53c", inputs: ["lineChartCategoryValue","categoryDefault","lineChartRegionValue","regionDefault","months","Query","crimeData","lineChart"], outputs: ["category","region","convert_to_date_string","resultPerMonthCategoryQuery","resultPerMonthCategory","getCategoryLineChart","resultPerMonthRegion","getRegionLineChart"], body: (lineChartCategoryValue,categoryDefault,lineChartRegionValue,regionDefault,months,Query,crimeData,lineChart) => {
+// Plots
+let category = lineChartCategoryValue;
+if(category === categoryDefault) {
+    category = null;
+}
+let region = lineChartRegionValue;
+if(region === regionDefault) {
+    region = null;
+}
+
+function convert_to_date_string(year, month){
+    let index = (months.indexOf(month) + 1).toString();
+    if (index.length < 2) {
+        index = `0${index}`;
+    }
+    return `${year}-${index}-01`;
+};
+
+// Category
+let resultPerMonthCategoryQuery = new Query(crimeData).filterByCategory(category).groupByYear();
+if (category === "Verkeersongevallen met lichamelijk letsel") {
+    resultPerMonthCategoryQuery = resultPerMonthCategoryQuery.deleteMultiple(["2018", "2019"]);
+}
+let resultPerMonthCategory = resultPerMonthCategoryQuery.groupByMonth()
+                                                          .aggregate("n.a.", convert_to_date_string)
+                                                          .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                          .getTotal()
+                                                          .aggregate("date")
+                                                          .result();
+
+resultPerMonthCategory= resultPerMonthCategory.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+
+const getCategoryLineChart = lineChart(resultPerMonthCategory, "datum", "totaal");
+
+// Region
+let resultPerMonthRegion = new Query(crimeData).filterByRegion(region)
+                                                 .groupByYear()
+                                                 .groupByMonth()
+                                                 .aggregate("n.a.", convert_to_date_string)
+                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                 .getTotal()
+                                                 .aggregate("date")
+                                                 .result();
+
+resultPerMonthRegion= resultPerMonthRegion.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const getRegionLineChart = lineChart(resultPerMonthRegion, "datum", "totaal");
+return {category,region,convert_to_date_string,resultPerMonthCategoryQuery,resultPerMonthCategory,getCategoryLineChart,resultPerMonthRegion,getRegionLineChart};
+}});
+
+define({id: "978d7fe5", inputs: ["html","lineChartCategoryInput","getCategoryLineChart","lineChartRegionInput","getRegionLineChart","display"], body: async (html,lineChartCategoryInput,getCategoryLineChart,lineChartRegionInput,getRegionLineChart,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-4">
+    <div class="grid-colspan-2">
+        <div>
+            <h4>Trend in het aantal misdrijven voor categorie: ${lineChartCategoryInput}</h4>
+            ${getCategoryLineChart}
+        </div>
+    </div>
+    <div class="grid-colspan-2">
+        <div>
+            <h4>Trend in het aantal misdrijven in de wijk: ${lineChartRegionInput}</h4>
+            ${getRegionLineChart}
+        </div>
+    </div>
+</div>
+<div>
+    Zoals we eerder al opmerkten bestaat de dataset uit talrijke categoriëen. Even interessant buiten bekijken welk soort criminaliteit het meest optreedt is bekijken wanneer deze het meest optreedt. </br> </br>
+    In deze interactieve linechart kan je bekijken in welke periode een bepaald soort criminaliteit het meest prevalent is. Sommige van deze periodes zijn te verklaren via externe factoren, waar we ook later op zullen ingaan. Het kan echter al zeer interessant zijn om zelf eens met de data te spelen en misschien ontdek je zelf enkele verbanden. </br> </br>
+    Verder kan je ook bekijken wanneer een wijk het meest turbulent is. Sommige wijken zien tijdens de zomermaanden een sterke stijging/daling in het aantal misdrijven. In andere wijken zien we ook een duidelijk stijgende of dalende trend in de voorbije jaren. </br> </br>
+    Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de wijk Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk zoiezo altijd weinig criminaliteit is waardoor fluctuaties groter lijken. </br> </br>
+</div>`
+))
+}});
+
+define({id: "6c301921", inputs: ["getLightCategories","getMediumCategories","getSevereCategories","Inputs","Generators"], outputs: ["baseCategories","resetBtn","resetCategories"], body: (getLightCategories,getMediumCategories,getSevereCategories,Inputs,Generators) => {
+const baseCategories = [getLightCategories(), getMediumCategories(), getSevereCategories()];
+const resetBtn = Inputs.button("Reset", {value: baseCategories, reduce: () => (baseCategories)})
+const resetCategories = Generators.input(resetBtn)
+return {baseCategories,resetBtn,resetCategories};
+}});
+
+define({id: "94605c7a", inputs: ["categories","Inputs","resetCategories","Generators"], outputs: ["tableData","lightTableInput","lightTableSelection","mediumTableInput","mediumTableSelection","severeTableInput","severeTableSelection"], body: (categories,Inputs,resetCategories,Generators) => {
+const tableData = categories.map((value) => ({"Misdrijf": value}))
+
+// light
+const lightTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[0].includes(o.Misdrijf)), required: false});
+const lightTableSelection = Generators.input(lightTableInput);
+
+// medium
+const mediumTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[1].includes(o.Misdrijf)), required: false});
+const mediumTableSelection = Generators.input(mediumTableInput);
+
+// severe
+const severeTableInput = Inputs.table(tableData, {rows: tableData.length + 1, value: tableData.filter((o) => resetCategories[2].includes(o.Misdrijf)), required: false});
+const severeTableSelection = Generators.input(severeTableInput); 
+return {tableData,lightTableInput,lightTableSelection,mediumTableInput,mediumTableSelection,severeTableInput,severeTableSelection};
+}});
+
+define({id: "6b4cc956", inputs: ["lightTableSelection","mediumTableSelection","severeTableSelection"], outputs: ["lightCrimes","mediumCrimes","severeCrimes"], body: (lightTableSelection,mediumTableSelection,severeTableSelection) => {
+const lightCrimes = lightTableSelection.map((o) => (o.Misdrijf))
+const mediumCrimes = mediumTableSelection.map((o) => (o.Misdrijf))
+const severeCrimes = severeTableSelection.map((o) => (o.Misdrijf))
+return {lightCrimes,mediumCrimes,severeCrimes};
+}});
+
+define({id: "14562a13", inputs: ["Query"], outputs: ["getCrimeData"], body: (Query) => {
+function getCrimeData(crimeData, cats){
+    let selectedData = new Query(crimeData).filterByCategories(cats).groupByRegion().getTotal().split();
+    if (cats.length == 0){
+        // Nothing is selected
+        selectedData.values = new Array(selectedData.keys.length).fill(0)
+    }
+    return selectedData
+}
+return {getCrimeData};
+}});
+
+define({id: "6f853550", inputs: ["lightCrimes","mediumCrimes","severeCrimes","Query","crimeData"], outputs: ["minCrimesSeverity","maxCrimesSeverity","selectedCategories","totalCrimes","categoryMin","categoryMax","domain"], body: (lightCrimes,mediumCrimes,severeCrimes,Query,crimeData) => {
+// create the domain ranges so that all the maps legends are the same
+let minCrimesSeverity = Infinity;
+let maxCrimesSeverity = -Infinity;
+let selectedCategories = lightCrimes.concat(mediumCrimes).concat(severeCrimes);
+let totalCrimes = new Query(crimeData).filterByCategories(selectedCategories).groupByRegion().getTotal().split();
+let categoryMin = Math.min(...totalCrimes.values);
+let categoryMax = Math.max(...totalCrimes.values);
+minCrimesSeverity = Math.min(minCrimesSeverity, categoryMin);
+maxCrimesSeverity = Math.max(maxCrimesSeverity, categoryMax);
+
+const domain = [minCrimesSeverity, maxCrimesSeverity]
+return {minCrimesSeverity,maxCrimesSeverity,selectedCategories,totalCrimes,categoryMin,categoryMax,domain};
+}});
+
+define({id: "46471636", inputs: ["mapPlot","getCrimeData","crimeData","lightCrimes","geoData","domain"], outputs: ["mapLight"], body: (mapPlot,getCrimeData,crimeData,lightCrimes,geoData,domain) => {
+const mapLight = mapPlot(
+    getCrimeData(crimeData, lightCrimes),
+    geoData,
+    true,
+    domain
+)
+return {mapLight};
+}});
+
+define({id: "ccf8d257", inputs: ["mapPlot","getCrimeData","crimeData","mediumCrimes","geoData","domain"], outputs: ["mapMedium"], body: (mapPlot,getCrimeData,crimeData,mediumCrimes,geoData,domain) => {
+const mapMedium = mapPlot(
+    getCrimeData(crimeData, mediumCrimes),
+    geoData,
+    true,
+    domain
+)
+return {mapMedium};
+}});
+
+define({id: "31aebede", inputs: ["mapPlot","getCrimeData","crimeData","severeCrimes","geoData","domain"], outputs: ["mapSevere"], body: (mapPlot,getCrimeData,crimeData,severeCrimes,geoData,domain) => {
+const mapSevere = mapPlot(
+    getCrimeData(crimeData, severeCrimes),
+    geoData,
+    true,
+    domain
+)
+return {mapSevere};
+}});
+
+define({id: "1cb3609b", inputs: ["html","display"], body: async (html,display) => {
+display(await(
+html.fragment`Bij het bekijken van criminaliteitcijfers is het interessant om een vergelijking te maken tussen de ernstigheid van de misdrijven. We willen steeds dat het merendeel van de misdrijven slechts een licht misdrijf zijn en dat ernstige misdrijven slechts uitzonderlijk voorkomen.`
+))
+}});
+
+define({id: "441176f1", inputs: ["html","lightTableInput","mediumTableInput","severeTableInput","display"], body: async (html,lightTableInput,mediumTableInput,severeTableInput,display) => {
+display(await(
+html.fragment`In onderstaande visualisatie tonen we juist dat. We hebben een rangschikking gemaakt in de categorieën van licht naar ernstig. De tabel laat toe om deze rangschikking te wijzigen.
+
+<div class="grid grid-cols-3">
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Licht misdrijf</h4>
+        ${lightTableInput}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Gematigd misdrijf</h4>
+        ${mediumTableInput}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        <h4>Ernstig misdrijf</h4>
+        ${severeTableInput}
+    </div>
+</div>`
+))
+}});
+
+define({id: "3d4101d8", inputs: ["html","resize","mapLight","mapMedium","mapSevere","display"], body: async (html,resize,mapLight,mapMedium,mapSevere,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-3">
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapLight(width))}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapMedium(width))}
+    </div>
+    <div class="grid-colspan-1 grid-rowspan-2">
+        ${resize((width) => mapSevere(width))}
+    </div>
+</div>`
+))
+}});
+
+define({id: "135d261c", inputs: ["html","resetBtn","display"], body: async (html,resetBtn,display) => {
+display(await(
+html.fragment`Herstel de rangschikking: ${resetBtn}`
+))
+}});
+
+define({id: "9c04edca", inputs: ["Query","crimeData","convert_to_date_string","lineChart"], outputs: ["resultZakkenrollerijBinnenstad","getZakkenrollerijBinnenstadLineChart"], body: (Query,crimeData,convert_to_date_string,lineChart) => {
+let resultZakkenrollerijBinnenstad = new Query(crimeData).filterByCategory("Zakkenrollerij")
+                                                           .filterByRegion("Binnenstad")
+                                                           .groupByYear()
+                                                           .groupByMonth()
+                                                           .aggregate("n.a.", convert_to_date_string)
+                                                           .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                           .getTotal()
+                                                           .aggregate("date")
+                                                           .result();
+// translate to duch
+resultZakkenrollerijBinnenstad = resultZakkenrollerijBinnenstad.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinnenstad, "datum", "totaal", ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
+return {resultZakkenrollerijBinnenstad,getZakkenrollerijBinnenstadLineChart};
+}});
+
+define({id: "8dbef1d9", inputs: ["html","getZakkenrollerijBinnenstadLineChart","display"], body: async (html,getZakkenrollerijBinnenstadLineChart,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-4">
+  <div class="grid-colspan-2">
+    <p>
+        Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden.
+        Dit is vooral opmerkelijk bij de hoeveelheid zakkenrollerij. Wanneer we bekijken waar die zakkerollerij juist plaatsvond zagen we op de heatmap een duidelijke overheersing in de binnenstad.
+        Alhoewel de zomermaanden waarschijnlijk een hotspot voor zakkenrollerij zijn omdat vele gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in gent vonden we deze data toch opmerkelijk.
+    </p>
+    <p>
+        Na wat na te denken kwamen we op het grootste evenment in Gent terecht dat toevallig ook in de zomermaanden plaatsvind: "De Gentse Feesten". Om de criminaliteit rond de Gentse feesten duidelijk te maken hebben we op de figuur rechts de zakkenrollerij in de binnenstad geplot.
+        Met enkele rode lijnen staan de datums van de Gentse Feesten aangeduid. Merk op dat in 2020 en 2021 er geen lijn aangeduid staat, de Gentse Feesten werden deze jaren afgelast doorwege de coronapandemie.
+    </p>  
+  </div>
+  <div class="grid-colspan-2">
+      <div>
+          <h4>Trend in de zakkenrollerij in de binnenstad.</h4>
+          ${getZakkenrollerijBinnenstadLineChart}
+      </div>
+  </div>
+</div>`
+))
+}});
+
+define({id: "10f49e98", inputs: ["Query","crimeData","convert_to_date_string","lineChart"], outputs: ["zakrollers","covidPlotZak"], body: (Query,crimeData,convert_to_date_string,lineChart) => {
+let zakrollers = new Query(crimeData).filterByCategory("Zakkenrollerij")
+                                                 .groupByYear()
+                                                 .groupByMonth()
+                                                 .aggregate("n.a.", convert_to_date_string)
+                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                 .getTotal()
+                                                 .aggregate("date")
+                                                 .result();
+// translate to duch
+zakrollers = zakrollers.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const covidPlotZak = lineChart(zakrollers, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
+
+return {zakrollers,covidPlotZak};
+}});
+
+define({id: "f2688d26", inputs: ["getCategories","Query","crimeData","convert_to_date_string","lineChart"], outputs: ["noParking","allCrime","covidPlotAll"], body: (getCategories,Query,crimeData,convert_to_date_string,lineChart) => {
+const noParking = getCategories().filter(c => c !== "Parkeerovertredingen");
+let allCrime = new Query(crimeData).filterByCategories(noParking)
+                                    .groupByYear()
+                                    .groupByMonth()
+                                    .aggregate("n.a.", convert_to_date_string)
+                                    .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                    .getTotal()
+                                    .aggregate("date")
+                                    .result();
+// translate to duch
+allCrime = allCrime.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
+
+return {noParking,allCrime,covidPlotAll};
+}});
+
+define({id: "c110edae", inputs: ["html","covidPlotAll","covidPlotZak","display"], body: async (html,covidPlotAll,covidPlotZak,display) => {
+display(await(
+html.fragment`<div class="grid grid-cols-2">
+    <div class="grid-colspan-1">
+        <h4>Alle misdaden - zonder parkeerovertredingen</h4>
+        <p>
+            In deze grafiek wordt het aantal misdaden in de stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
+        </p>
+    </div>
+ 
+    <div class="grid-colspan-1">
+        <h4>Zakkenrollerij</h4>
+        <p>
+            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren, waaronder verminderde drukte in openbare ruimtes en het toepassen van social distancing vermoeilijkt het zakkenrollen.
+        </p>
+    </div>   
+</div>
+<div class="grid grid-cols-2">
+    <div class="grid-colspan-1">
+      ${covidPlotAll}
+    </div>
+    <div class="grid-colspan-1">
+      ${covidPlotZak}
+    </div>
+</div>`
+))
+}});
+
+</script>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="criminaliteitscijfers-gent" tabindex="-1"><a class="observablehq-header-anchor" href="#criminaliteitscijfers-gent">Criminaliteitscijfers Gent</a></h1>
+<p>Brent Matthys, Warre Provoost en Mats Van Belle</p>
+<hr>
+<div id="cell-2977cdbe" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-289f5e18" class="observablehq observablehq--block"></div>
+<div id="cell-8ae89255" class="observablehq observablehq--block"></div>
+<h2 id="de-dataset" tabindex="-1"><a class="observablehq-header-anchor" href="#de-dataset">De dataset</a></h2>
+<div id="cell-018b3300" class="observablehq observablehq--block"></div>
+<div id="cell-74bfb64c" class="observablehq observablehq--block"></div>
+<div id="cell-edad4182" class="observablehq observablehq--block"></div>
+<div id="cell-2d89a191" class="observablehq observablehq--block"></div>
+<div id="cell-a9ea1663" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-8565a27e" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-84d8250a" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="misdrijven-per-wijk" tabindex="-1"><a class="observablehq-header-anchor" href="#misdrijven-per-wijk">Misdrijven per wijk</a></h2>
+<div id="cell-64b7512f" class="observablehq observablehq--block"></div>
+<div id="cell-86b98ef2" class="observablehq observablehq--block"></div>
+<div id="cell-3802d6dd" class="observablehq observablehq--block"></div>
+<div id="cell-9a19c423" class="observablehq observablehq--block"></div>
+<div id="cell-2bc6f1f3" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="criminaliteit-doorheen-de-tijd" tabindex="-1"><a class="observablehq-header-anchor" href="#criminaliteit-doorheen-de-tijd">Criminaliteit doorheen de tijd</a></h2>
+<div id="cell-bd5eca8f" class="observablehq observablehq--block"></div>
+<div id="cell-f452f53c" class="observablehq observablehq--block"></div>
+<div id="cell-978d7fe5" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="de-ernst-van-de-mijsdrijven" tabindex="-1"><a class="observablehq-header-anchor" href="#de-ernst-van-de-mijsdrijven">De ernst van de mijsdrijven</a></h2>
+<div id="cell-6c301921" class="observablehq observablehq--block"></div>
+<div id="cell-94605c7a" class="observablehq observablehq--block"></div>
+<div id="cell-6b4cc956" class="observablehq observablehq--block"></div>
+<div id="cell-14562a13" class="observablehq observablehq--block"></div>
+<div id="cell-6f853550" class="observablehq observablehq--block"></div>
+<div id="cell-46471636" class="observablehq observablehq--block"></div>
+<div id="cell-ccf8d257" class="observablehq observablehq--block"></div>
+<div id="cell-31aebede" class="observablehq observablehq--block"></div>
+<div id="cell-1cb3609b" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-441176f1" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-3d4101d8" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-135d261c" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="gentse-feesten" tabindex="-1"><a class="observablehq-header-anchor" href="#gentse-feesten">Gentse feesten</a></h2>
+<div id="cell-9c04edca" class="observablehq observablehq--block"></div>
+<div id="cell-8dbef1d9" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="criminaliteit-tijdens-covid" tabindex="-1"><a class="observablehq-header-anchor" href="#criminaliteit-tijdens-covid">Criminaliteit tijdens Covid</a></h2>
+<div id="cell-10f49e98" class="observablehq observablehq--block"></div>
+<div id="cell-f2688d26" class="observablehq observablehq--block"></div>
+<div id="cell-c110edae" class="observablehq observablehq--block observablehq--loading"></div>
+</main>
+<footer id="observablehq-footer">
+<div>Built with <a href="https://observablehq.com/" target="_blank">Observable</a> on <a title="2024-05-11T10:52:49">May 11, 2024</a>.</div>
+</footer>
+</div>

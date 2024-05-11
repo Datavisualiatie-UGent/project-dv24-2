@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Data | dv24-2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="../_observablehq/theme-air,slate.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="../_observablehq/theme-air,slate.css">
+<link rel="modulepreload" href="../_observablehq/client.js">
+<link rel="modulepreload" href="../_observablehq/runtime.js">
+<link rel="modulepreload" href="../_observablehq/stdlib.js">
+<link rel="modulepreload" href="./data/fetchRawData.js">
+<link rel="modulepreload" href="./data/crimes/crimeData.js">
+<link rel="modulepreload" href="./data/geometry/geometryData.js">
+<script type="module">
+
+import {define} from "../_observablehq/client.js";
+
+define({id: "c7003010", outputs: ["fetchRawData","createCrimeData","loadCrimeData","createGeometryData","loadGeometryData","rawData","crimeFromRaw","geometryFromRaw","crimeFromFile","geometryFromFile"], body: async () => {
+const [{fetchRawData}, {createCrimeData, loadCrimeData}, {createGeometryData, loadGeometryData}] = await Promise.all([import("./data/fetchRawData.js"), import("./data/crimes/crimeData.js"), import("./data/geometry/geometryData.js")]);
+
+
+// option 1: fetch data //
+// Get the raw data
+const rawData = await fetchRawData();
+
+// Get crime and geometry data from raw data
+const crimeFromRaw = createCrimeData(rawData);
+const geometryFromRaw = createGeometryData(rawData);
+
+// option 2: load data //
+// Get crime and geometry data from file
+const crimeFromFile = loadCrimeData();
+const geometryFromFile = loadGeometryData();
+return {fetchRawData,createCrimeData,loadCrimeData,createGeometryData,loadGeometryData,rawData,crimeFromRaw,geometryFromRaw,crimeFromFile,geometryFromFile};
+}});
+
+</script>
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type), h2:first-child, :not(h1) + h2">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#folder-structure">Folder structure</a></li>
+<li class="observablehq-secondary-link"><a href="#acquiring-data">Acquiring data</a></li>
+</ol>
+</nav>
+</aside>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="data" tabindex="-1"><a class="observablehq-header-anchor" href="#data">Data</a></h1>
+<p>The data used is about crime numbers in Ghent city and can be found <a href="https://data.stad.gent/explore/?disjunctive.keyword&amp;disjunctive.theme&amp;sort=explore.popularity_score&amp;refine.keyword=Criminaliteitscijfers">here</a>.</p>
+<h2 id="folder-structure" tabindex="-1"><a class="observablehq-header-anchor" href="#folder-structure">Folder structure</a></h2>
+<pre data-language="bash"><code class="language-bash">.
+├── crimes <span class="hljs-comment"># folder for the crime data</span>
+│&nbsp;&nbsp; ├── crimeData.js
+│&nbsp;&nbsp; └── crime_data.json
+├── geometry <span class="hljs-comment"># folder for the geometry data</span>
+│&nbsp;&nbsp; ├── geometryData.js
+│&nbsp;&nbsp; └── geometry_data.json
+├── fetchRawData.js <span class="hljs-comment"># function to fetch raw data from the api</span>
+├── loadJSON.js <span class="hljs-comment"># function to load json from file</span>
+└── README.md
+</code></pre>
+<h2 id="acquiring-data" tabindex="-1"><a class="observablehq-header-anchor" href="#acquiring-data">Acquiring data</a></h2>
+<p>The data is fetched from the api's of the various present data sets. The data contains a lot of duplicate information, since each row contains all the info about the crime.
+For this reason we provide 2 data objects to be used in the visualisations.</p>
+<ul>
+<li><a href="#geometry-data">Geometry data</a></li>
+<li><a href="#crime-data">Crime data</a>
+The api also only allow us to fetch 100 rows at a time. This makes the data fetching process very slow. For this reason, we allow for both data objects to
+either be fetched from the api, or loaded from file. The latter is much faster.</li>
+</ul>
+<h3 id="geometry-data" tabindex="-1"><a class="observablehq-header-anchor" href="#geometry-data">Geometry data</a></h3>
+<p>Ghent city is devided in separate regions. The geometry data provides a way to create a map of Ghent with these regions.</p>
+<h3 id="crime-data" tabindex="-1"><a class="observablehq-header-anchor" href="#crime-data">Crime data</a></h3>
+<p>This is the actual data of the crimes. The data is a huge array of entries as followed:</p>
+<pre data-language="json"><code class="language-json"><span class="hljs-punctuation">[</span>
+  <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"year"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2020</span><span class="hljs-punctuation">,</span>               <span class="hljs-comment">// year of incidents </span>
+    <span class="hljs-attr">"month"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"juni"</span><span class="hljs-punctuation">,</span>            <span class="hljs-comment">// month of incidents</span>
+    <span class="hljs-attr">"category"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Autodiefstal"</span><span class="hljs-punctuation">,</span> <span class="hljs-comment">// the type of the crime</span>
+    <span class="hljs-attr">"region"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Binnenstad"</span><span class="hljs-punctuation">,</span>     <span class="hljs-comment">// where the crime took place</span>
+    <span class="hljs-attr">"total"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8</span><span class="hljs-punctuation">,</span>                 <span class="hljs-comment">// total amount of incedents</span>
+    <span class="hljs-attr">"geo_point_2d"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>...<span class="hljs-punctuation">}</span>       <span class="hljs-comment">// 2d geometry data</span>
+  <span class="hljs-punctuation">}</span>
+  ...
+<span class="hljs-punctuation">]</span>
+</code></pre>
+<p>To work with the crime data we have implemented a <a href="../components/queries.js">Query class in the queries.js file</a> that makes our life easier when querying the data.
+You can read its documentation <a href="../components/README.md">here</a>.</p>
+<h3 id="acquiring-data-example" tabindex="-1"><a class="observablehq-header-anchor" href="#acquiring-data-example">Acquiring data example</a></h3>
+<div id="cell-c7003010" class="observablehq observablehq--block"></div>
+<p>Note that <code>crimeFromRaw</code> and <code>crimeFromFile</code> will be identical. This is the same for <code>geometryFromRaw</code> and <code>geometryFromRaw</code>.</p>
+</main>
+<footer id="observablehq-footer">
+<div>Built with <a href="https://observablehq.com/" target="_blank">Observable</a> on <a title="2024-05-11T10:52:49">May 11, 2024</a>.</div>
+</footer>
+</div>
