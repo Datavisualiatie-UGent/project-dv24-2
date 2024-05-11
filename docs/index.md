@@ -520,29 +520,27 @@ const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022
 
 ```
 ```html
-<div class="grid grid-cols-3">
-     <div class="grid-colspan-1">
-      <p>
-      In deze grafiek wordt het aantal misdaden in de stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
-      </p>
-    </div>
-    <div class="grid-colspan-2">
-      ${covidPlotAll}
+<div class="grid grid-cols-2">
+    <div class="grid-colspan-1">
+        <h4>Alle misdaden - zonder parkeerovertredingen</h4>
+        <p>
+            In deze grafiek wordt het aantal misdaden in de stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
+        </p>
     </div>
  
-</div>
-<div class="grid grid-cols-3">
-
     <div class="grid-colspan-1">
-      <p>
-      In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren, waaronder verminderde drukte in openbare ruimtes en het toepassen van social distancing vermoeilijkt het zakkenrollen.
-      </p>
+        <h4>Zakkenrollerij</h4>
+        <p>
+            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren, waaronder verminderde drukte in openbare ruimtes en het toepassen van social distancing vermoeilijkt het zakkenrollen.
+        </p>
+    </div>   
+</div>
+<div class="grid grid-cols-2">
+    <div class="grid-colspan-1">
+      ${covidPlotAll}
     </div>
-        <div class="grid-colspan-2">
+    <div class="grid-colspan-1">
       ${covidPlotZak}
     </div>
 </div>
-
-
 ```
-
