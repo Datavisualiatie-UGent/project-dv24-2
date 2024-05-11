@@ -319,50 +319,8 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "datum", "totaal");
 </div>
 ```
 
-## Gentse feesten
+## De ernst van de mijsdrijven
 
-```js
-let resultZakkenrollerijBinnenstad = new Query(crimeData).filterByCategory("Zakkenrollerij")
-                                                           .filterByRegion("Binnenstad")
-                                                           .groupByYear()
-                                                           .groupByMonth()
-                                                           .aggregate("n.a.", convert_to_date_string)
-                                                           .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
-                                                           .getTotal()
-                                                           .aggregate("date")
-                                                           .result();
-// translate to duch
-resultZakkenrollerijBinnenstad = resultZakkenrollerijBinnenstad.map(({date, total}) => ({
-    datum: date,
-    totaal: total
-}))
-
-const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinnenstad, "datum", "totaal", ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
-```
-
-```html
-<div class="grid grid-cols-4">
-  <div class="grid-colspan-2">
-    <p>
-        Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden.
-        Dit is vooral opmerkelijk bij de hoeveelheid zakkenrollerij. Wanneer we bekijken waar die zakkerollerij juist plaatsvond zagen we op de heatmap een duidelijke overheersing in de binnenstad.
-        Alhoewel de zomermaanden waarschijnlijk een hotspot voor zakkenrollerij zijn omdat vele gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in gent vonden we deze data toch opmerkelijk.
-    </p>
-    <p>
-        Na wat na te denken kwamen we op het grootste evenment in Gent terecht dat toevallig ook in de zomermaanden plaatsvind: "De Gentse Feesten". Om de criminaliteit rond de Gentse feesten duidelijk te maken hebben we op de figuur rechts de zakkenrollerij in de binnenstad geplot.
-        Met enkele rode lijnen staan de datums van de Gentse Feesten aangeduid. Merk op dat in 2020 en 2021 er geen lijn aangeduid staat, de Gentse Feesten werden deze jaren afgelast doorwege de coronapandemie.
-    </p>  
-  </div>
-  <div class="grid-colspan-2">
-      <div>
-          <h4>Trend in de zakkenrollerij in de binnenstad.</h4>
-          ${getZakkenrollerijBinnenstadLineChart}
-      </div>
-  </div>
-</div>
-```
-
-## De ernst van misdrijven
 ```js
 const baseCategories = [getLightCategories(), getMediumCategories(), getSevereCategories()];
 const resetBtn = Inputs.button("Reset", {value: baseCategories, reduce: () => (baseCategories)})
@@ -478,5 +436,111 @@ In onderstaande visualisatie tonen we juist dat. We hebben een rangschikking gem
 ```html
 Herstel de rangschikking: ${resetBtn}
 ```
-## Covid
-TODO
+
+## Gentse feesten
+
+```js
+let resultZakkenrollerijBinnenstad = new Query(crimeData).filterByCategory("Zakkenrollerij")
+                                                           .filterByRegion("Binnenstad")
+                                                           .groupByYear()
+                                                           .groupByMonth()
+                                                           .aggregate("n.a.", convert_to_date_string)
+                                                           .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                           .getTotal()
+                                                           .aggregate("date")
+                                                           .result();
+// translate to duch
+resultZakkenrollerijBinnenstad = resultZakkenrollerijBinnenstad.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinnenstad, "datum", "totaal", ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
+```
+
+```html
+<div class="grid grid-cols-4">
+  <div class="grid-colspan-2">
+    <p>
+        Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden.
+        Dit is vooral opmerkelijk bij de hoeveelheid zakkenrollerij. Wanneer we bekijken waar die zakkerollerij juist plaatsvond zagen we op de heatmap een duidelijke overheersing in de binnenstad.
+        Alhoewel de zomermaanden waarschijnlijk een hotspot voor zakkenrollerij zijn omdat vele gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in gent vonden we deze data toch opmerkelijk.
+    </p>
+    <p>
+        Na wat na te denken kwamen we op het grootste evenment in Gent terecht dat toevallig ook in de zomermaanden plaatsvind: "De Gentse Feesten". Om de criminaliteit rond de Gentse feesten duidelijk te maken hebben we op de figuur rechts de zakkenrollerij in de binnenstad geplot.
+        Met enkele rode lijnen staan de datums van de Gentse Feesten aangeduid. Merk op dat in 2020 en 2021 er geen lijn aangeduid staat, de Gentse Feesten werden deze jaren afgelast doorwege de coronapandemie.
+    </p>  
+  </div>
+  <div class="grid-colspan-2">
+      <div>
+          <h4>Trend in de zakkenrollerij in de binnenstad.</h4>
+          ${getZakkenrollerijBinnenstadLineChart}
+      </div>
+  </div>
+</div>
+```
+
+## Criminaliteit tijdens Covid
+```js
+let zakrollers = new Query(crimeData).filterByCategory("Zakkenrollerij")
+                                                 .groupByYear()
+                                                 .groupByMonth()
+                                                 .aggregate("n.a.", convert_to_date_string)
+                                                 .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                                 .getTotal()
+                                                 .aggregate("date")
+                                                 .result();
+// translate to duch
+zakrollers = zakrollers.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const covidPlotZak = lineChart(zakrollers, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
+
+```
+
+```js
+const noParking = getCategories().filter(c => c !== "Parkeerovertredingen");
+let allCrime = new Query(crimeData).filterByCategories(noParking)
+                                    .groupByYear()
+                                    .groupByMonth()
+                                    .aggregate("n.a.", convert_to_date_string)
+                                    .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                    .getTotal()
+                                    .aggregate("date")
+                                    .result();
+// translate to duch
+allCrime = allCrime.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
+
+```
+```html
+<div class="grid grid-cols-2">
+    <div class="grid-colspan-1">
+        <h4>Alle misdaden - zonder parkeerovertredingen</h4>
+        <p>
+            In deze grafiek wordt het aantal misdaden in de stad gedurende de COVID-19-pandemie weergegeven. Opmerkelijk is de daling in criminaliteit op het moment dat de lockdown net ingevoerd werd. Maar er is ook te zien dat het aantal misdaden snel terugkeerde naar het oorspronkelijke niveau tijdens de zomermaanden.
+        </p>
+    </div>
+ 
+    <div class="grid-colspan-1">
+        <h4>Zakkenrollerij</h4>
+        <p>
+            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren, waaronder verminderde drukte in openbare ruimtes en het toepassen van social distancing vermoeilijkt het zakkenrollen.
+        </p>
+    </div>   
+</div>
+<div class="grid grid-cols-2">
+    <div class="grid-colspan-1">
+      ${covidPlotAll}
+    </div>
+    <div class="grid-colspan-1">
+      ${covidPlotZak}
+    </div>
+</div>
+```
