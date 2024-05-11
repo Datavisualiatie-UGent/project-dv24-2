@@ -437,7 +437,6 @@ In onderstaande visualisatie tonen we juist dat. We hebben een rangschikking gem
 Herstel de rangschikking: ${resetBtn}
 ```
 
-
 ## Gentse feesten
 
 ```js
@@ -483,7 +482,7 @@ const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinne
 
 ## Criminaliteit tijdens Covid
 ```js
-  const zakrollers = new Query(crimeData).filterByCategory("Zakkenrollerij")
+let zakrollers = new Query(crimeData).filterByCategory("Zakkenrollerij")
                                                  .groupByYear()
                                                  .groupByMonth()
                                                  .aggregate("n.a.", convert_to_date_string)
@@ -491,56 +490,33 @@ const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinne
                                                  .getTotal()
                                                  .aggregate("date")
                                                  .result();
-    const covidDomainAll = [new Date(zakrollers[0]["date"]), new Date(zakrollers[zakrollers.length-1]["date"])];
-    const startCovid = zakrollers.find(d => new Date(d["date"]).getTime() === new Date("2020-03-01").getTime());
-    const eindCovid = zakrollers.find(d => new Date(d["date"]).getTime() === new Date("2022-05-01").getTime());
+// translate to duch
+zakrollers = zakrollers.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
 
-    const covidPlotZak =  Plot.plot({
-        title: "Zakkenrollerij",
-        marks: [
-            Plot.ruleY([0]),
-            Plot.lineY(zakrollers, {x:"date", y:"total", marker:true}),
-            Plot.text([startCovid], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
-            Plot.text([eindCovid], {x: "date", y: "total", text:  ["Einde Covid"], dy: "34", fontSize:14, fill:"red"}),
-            Plot.dot([startCovid], {x: "date", y: "total", fill:"red", r:5}),
-            Plot.dot([eindCovid], {x: "date", y: "total", fill:"red", r:5})
-        ],
-        
-
-        x: {domain: covidDomainAll, grid:true},
-    });
+const covidPlotZak = lineChart(zakrollers, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
 
 ```
 
 ```js
-  const noParking = getCategories().filter(c => c !== "Parkeerovertredingen");
-  const allCrime = new Query(crimeData).filterByCategories(noParking)
-                                        .groupByYear()
-                                        .groupByMonth()
-                                        .aggregate("n.a.", convert_to_date_string)
-                                        .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
-                                        .getTotal()
-                                        .aggregate("date")
-                                        .result();
-    const covidDomainPickPocket = [new Date(allCrime[0]["date"]), new Date(allCrime[allCrime.length-1]["date"])];
-    const startCovidAll = allCrime.find(d => new Date(d["date"]).getTime() === new Date("2020-03-01").getTime());
-    const eindCovidAll = allCrime.find(d => new Date(d["date"]).getTime() === new Date("2022-05-01").getTime());
+const noParking = getCategories().filter(c => c !== "Parkeerovertredingen");
+let allCrime = new Query(crimeData).filterByCategories(noParking)
+                                    .groupByYear()
+                                    .groupByMonth()
+                                    .aggregate("n.a.", convert_to_date_string)
+                                    .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
+                                    .getTotal()
+                                    .aggregate("date")
+                                    .result();
+// translate to duch
+allCrime = allCrime.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
 
-    const covidPlotAll =  Plot.plot({
-        title: "Alle misdaden",
-        subtitle: "zonder parkeerovertredingen",
-        marks: [
-            Plot.ruleY([0]),
-            Plot.lineY(allCrime, {x:"date", y:"total", marker:true}),
-            Plot.text([startCovidAll], {x: "date", y: "total", text: ["Begin Covid"], dy: "16", dx:"-38", fontSize: 14, fill:"red"}),
-            Plot.text([eindCovidAll], {x: "date", y: "total", text:  ["Einde Covid"], dy: "40", fontSize:14, fill:"red"}),
-            Plot.dot([startCovidAll], {x: "date", y: "total", fill:"red", r:5}),
-            Plot.dot([eindCovidAll], {x: "date", y: "total", fill:"red", r:5})
-        ],
-        
-
-        x: {domain: covidDomainPickPocket, grid:true},
-    });
+const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
 
 ```
 ```html
