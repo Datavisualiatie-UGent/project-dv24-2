@@ -48,7 +48,7 @@ const years = getYears();
 const categories = getCategories();
 const regions = getRegions();
 const categoryDefault = "Alle misdrijven"
-const regionDefault = "Alle regio's"
+const regionDefault = "Alle wijken"
 const categoryCats = [categoryDefault].concat(categories)
 const regionCats = [regionDefault].concat(regions)
 ```
@@ -59,17 +59,20 @@ const regionCats = [regionDefault].concat(regions)
 const parkInput_dataset = Inputs.toggle({label: "Toon parkeer overtredingen"})
 const showPark_dataset = Generators.input(parkInput_dataset);
 
-let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().aggregate("category").result();
-let regionCrimes = new Query(crimeData).groupByRegion().getTotal().aggregate("region").result();
-let yearCrimes = new Query(crimeData).groupByYear().getTotal().aggregate("year").result();
-let monthCrimes = new Query(crimeData).groupByMonth().getTotal().aggregate("month").result();
+let categoricalCrimes = new Query(crimeData).groupByCategory().getTotal().aggregate("category").result().map(({category, total}) => ({categorie: category, totaal: total}));
+let regionCrimes = new Query(crimeData).groupByRegion().getTotal().aggregate("region").result().map(({region, total}) => ({wijk: region, totaal: total}));
+let yearCrimes = new Query(crimeData).groupByYear().getTotal().aggregate("year").result().map(({year, total}) => ({jaar: year, totaal: total}));
+let monthCrimes = new Query(crimeData).groupByMonth().getTotal().aggregate("month").result().map(({month, total}) => ({maand: month, totaal: total}));
+```
+```js
+categoricalCrimes
 ```
 
 ```js
-const getCategoryPlot = barChart(categoricalCrimes, "category", "total", "Category", "Amount of crimes");
-const getRegionPlot = barChart(regionCrimes, "region", "total", "Region", "Amount of crimes");
-const getYearPlot = barChart(yearCrimes, "year", "total", "Year", "Amount of crimes");
-const getMonthPlot = barChart(monthCrimes, "month", "total", "Month", "Amount of crimes");
+const getCategoryPlot = barChart(categoricalCrimes, "categorie", "totaal", "Categorie", "Aantal misdrijven");
+const getRegionPlot = barChart(regionCrimes, "wijk", "totaal", "Wijk", "Aantal misdrijven");
+const getYearPlot = barChart(yearCrimes, "jaar", "totaal", "Jaar", "Aantal misdrijven");
+const getMonthPlot = barChart(monthCrimes, "maand", "totaal", "Maand", "Aantal misdrijven");
 ```
 
 ```html
@@ -250,7 +253,7 @@ const getMapPlot = (width) => Plot.plot({
 // Inputs
 const lineChartCategoryInput = Inputs.select(categoryCats, {value: "Alle misdrijven", label: "Selecteer misdrijf"});
 const lineChartCategoryValue = Generators.input(lineChartCategoryInput);
-const lineChartRegionInput = Inputs.select(regionCats, {value: "Alle regio's", label: "Selecteer regio"});
+const lineChartRegionInput = Inputs.select(regionCats, {value: "Alle wijken", label: "Selecteer wijk"});
 const lineChartRegionValue = Generators.input(lineChartRegionInput);
 ```
 
@@ -278,17 +281,23 @@ let resultPerMonthCategoryQuery = new Query(crimeData).filterByCategory(category
 if (category === "Verkeersongevallen met lichamelijk letsel") {
     resultPerMonthCategoryQuery = resultPerMonthCategoryQuery.deleteMultiple(["2018", "2019"]);
 }
-const resultPerMonthCategory = resultPerMonthCategoryQuery.groupByMonth()
+let resultPerMonthCategory = resultPerMonthCategoryQuery.groupByMonth()
                                                           .aggregate("n.a.", convert_to_date_string)
                                                           .deleteMultiple(["2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01"])
                                                           .getTotal()
                                                           .aggregate("date")
                                                           .result();
 
-const getCategoryLineChart = lineChart(resultPerMonthCategory, "date", "total");
+resultPerMonthCategory= resultPerMonthCategory.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+
+const getCategoryLineChart = lineChart(resultPerMonthCategory, "datum", "totaal");
 
 // Region
-const resultPerMonthRegion = new Query(crimeData).filterByRegion(region)
+let resultPerMonthRegion = new Query(crimeData).filterByRegion(region)
                                                  .groupByYear()
                                                  .groupByMonth()
                                                  .aggregate("n.a.", convert_to_date_string)
@@ -297,7 +306,12 @@ const resultPerMonthRegion = new Query(crimeData).filterByRegion(region)
                                                  .aggregate("date")
                                                  .result();
 
-const getRegionLineChart = lineChart(resultPerMonthRegion, "date", "total");
+resultPerMonthRegion= resultPerMonthRegion.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
+
+const getRegionLineChart = lineChart(resultPerMonthRegion, "datum", "totaal");
 ```
 
 ```html
@@ -310,7 +324,7 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "date", "total");
     </div>
     <div class="grid-colspan-2">
         <div>
-            <h4>Trend in het aantal misdrijven in de regio: ${lineChartRegionInput}</h4>
+            <h4>Trend in het aantal misdrijven in de wijk: ${lineChartRegionInput}</h4>
             ${getRegionLineChart}
         </div>
     </div>
@@ -318,15 +332,15 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "date", "total");
 <div>
     Zoals we eerder al opmerkten bestaat de dataset uit talrijke categoriëen. Even interessant buiten bekijken welk soort criminaliteit het meest optreedt is bekijken wanneer deze het meest optreedt. </br> </br>
     In deze interactieve linechart kan je bekijken in welke periode een bepaald soort criminaliteit het meest prevalent is. Sommige van deze periodes zijn te verklaren via externe factoren, waar we ook later op zullen ingaan. Het kan echter al zeer interessant zijn om zelf eens met de data te spelen en misschien ontdek je zelf enkele verbanden. </br> </br>
-    Verder kan je ook bekijken wanneer een regio het meest turbulent is. Sommige regio's zien tijdens de zomermaanden een sterke stijging/daling in het aantal misdrijven. In andere regio's zien we ook een duidelijk stijgende of dalende trend in de voorbije jaren. </br> </br>
-    Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de regio Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk zoiezo altijd weinig criminaliteit is waardoor fluctuaties groter lijken. </br> </br>
+    Verder kan je ook bekijken wanneer een wijk het meest turbulent is. Sommige wijken zien tijdens de zomermaanden een sterke stijging/daling in het aantal misdrijven. In andere wijken zien we ook een duidelijk stijgende of dalende trend in de voorbije jaren. </br> </br>
+    Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de wijk Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk zoiezo altijd weinig criminaliteit is waardoor fluctuaties groter lijken. </br> </br>
 </div>
 ```
 
 ## Gentse feesten
 
 ```js
-const resultZakkenrollerijBinnenstad = new Query(crimeData).filterByCategory("Zakkenrollerij")
+let resultZakkenrollerijBinnenstad = new Query(crimeData).filterByCategory("Zakkenrollerij")
                                                            .filterByRegion("Binnenstad")
                                                            .groupByYear()
                                                            .groupByMonth()
@@ -335,8 +349,13 @@ const resultZakkenrollerijBinnenstad = new Query(crimeData).filterByCategory("Za
                                                            .getTotal()
                                                            .aggregate("date")
                                                            .result();
+// translate to duch
+resultZakkenrollerijBinnenstad = resultZakkenrollerijBinnenstad.map(({date, total}) => ({
+    datum: date,
+    totaal: total
+}))
 
-const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinnenstad, "date", "total", ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
+const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinnenstad, "datum", "totaal", ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
 ```
 
 ```html
