@@ -1,14 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function barChart(data, x,  y, x_label, y_label, months) {
-    let isMonthPlot = months.length != 0;
-
-    if(isMonthPlot){
-        data.map((v, i) => v.maand = `${('0'+(i+1)).slice(-2)}  ${v.maand}`);
-
-    }
-    console.log(data);
-
+export function barChart(data, x,  y, x_label, y_label, sort=true) {
     return Plot.plot({
         marginBottom: 100,
         marginLeft: 70,
@@ -16,7 +8,7 @@ export function barChart(data, x,  y, x_label, y_label, months) {
         x: {label: x_label, tickRotate: -20},
         y: {label: y_label, grid:true},
         marks: [
-            Plot.barY(data, {x: x, y: y, sort: isMonthPlot ? null : {x: "-y"}}),
+            Plot.barY(data, {x: x, y: y, sort: !sort ? null : {x: "-y"}}),
             Plot.tip(data, Plot.pointer({x: x, y: y}))
         ]
     });
