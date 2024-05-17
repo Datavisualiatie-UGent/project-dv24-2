@@ -533,7 +533,7 @@ const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022
     <div class="grid-colspan-1">
         <h4>Zakkenrollerij</h4>
         <p>
-            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren. De verminderde drukte in openbare ruimtes en het toepassen van social distancing maakt het zakkenrollen moeilijk.
+            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens Covid. Deze daling kan worden toegeschreven aan verschillende factoren. De verminderde drukte in openbare ruimtes en het toepassen van social distancing maakt het zakkenrollen moeilijk.
         </p>
     </div>   
 </div>
