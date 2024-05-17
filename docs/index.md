@@ -321,7 +321,7 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "datum", "totaal");
 </div>
 ```
 
-## De ernst van de mijsdrijven
+## De ernst van de misdrijven
 
 ```js
 const baseCategories = [getLightCategories(), getMediumCategories(), getSevereCategories()];
