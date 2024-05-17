@@ -94,7 +94,7 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
             In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
         </p>
         <p>
-            Bij het maken van visualisaties kan het een vertkend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
+            Bij het maken van visualisaties kan het een vertekend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
         </p>
         <div>
             <i>Klik me!</i>
@@ -119,7 +119,7 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
           Bekijk zeker ook de 3 andere plots voor een ruimer beeld van de dataset. Het is bijvoorbeeld duidelijk dat, alhoewel de criminaleit redelijk constant blijft doorheen de tijd, we wel een onevenwicht hebben tussen de regio's.
       </p>
       <p>
-          Op de figuur links zien we bijvoorbeeld dat het merendeel van de misdrijven in de binnenstad plaatsvindt. Dit kan te maken hebben met het aantal inwoners, een strengere controle of omdat de binnenstad gewoonweg een populaire locatie is. Wat de reden ook kan zijn, het kan belangrijk zijn om deze nuance in je achterhoofd te houden.
+          Op de figuur links zien we bijvoorbeeld dat het merendeel van de misdrijven in de binnenstad plaatsvindt. Dit kan te maken hebben met het aantal inwoners, een strengere controle of omdat de binnenstad gewoonweg een populaire locatie is. Wat de reden ook mag zijn, het kan belangrijk zijn om deze nuance in je achterhoofd te houden.
       </p>
   </div>
 </div>
@@ -314,10 +314,10 @@ const getRegionLineChart = lineChart(resultPerMonthRegion, "datum", "totaal");
     </div>
 </div>
 <div>
-    Zoals we eerder al opmerkten bestaat de dataset uit talrijke categoriëen. Even interessant buiten bekijken welk soort criminaliteit het meest optreedt is bekijken wanneer deze het meest optreedt. </br> </br>
+    Zoals we eerder al opmerkten bestaat de dataset uit talrijke categoriëen. Het is interessant om te bekijken wanneer welk soort criminaliteit het meest optreedt. </br> </br>
     In deze interactieve linechart kan je bekijken in welke periode een bepaald soort criminaliteit het meest prevalent is. Sommige van deze periodes zijn te verklaren via externe factoren, waar we ook later op zullen ingaan. Het kan echter al zeer interessant zijn om zelf eens met de data te spelen en misschien ontdek je zelf enkele verbanden. </br> </br>
     Verder kan je ook bekijken wanneer een wijk het meest turbulent is. Sommige wijken zien tijdens de zomermaanden een sterke stijging/daling in het aantal misdrijven. In andere wijken zien we ook een duidelijk stijgende of dalende trend in de voorbije jaren. </br> </br>
-    Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de wijk Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk zoiezo altijd weinig criminaliteit is waardoor fluctuaties groter lijken. </br> </br>
+    Sommige van deze conclusies worden best echter met een korreltje zout genomen. Bekijk bijvoorbeeld de wijk Zwijnaarde: hier zien we een heel sterke stijging in de criminaliteitscijfers na 2022. Alhoewel hier waarschijnlijk een goede reden voor te vinden is (bekijk de Corona-epidemie in een later hoofdstuk), blijken deze datapunten niet super relevant aangezien er in Zwijnaarde eigenlijk altijd weinig criminaliteit is waardoor fluctuaties groter lijken. </br> </br>
 </div>
 ```
 
@@ -405,7 +405,7 @@ const mapSevere = mapPlot(
 Bij het bekijken van criminaliteitcijfers is het interessant om een vergelijking te maken tussen de ernstigheid van de misdrijven. We willen steeds dat het merendeel van de misdrijven slechts een licht misdrijf zijn en dat ernstige misdrijven slechts uitzonderlijk voorkomen.
 ```
 ```html
-In onderstaande visualisatie tonen we juist dat. We hebben een rangschikking gemaakt in de categorieën van licht naar ernstig. De tabel laat toe om deze rangschikking te wijzigen.
+Dit tonen we aan in onderstaande visualisatie. We hebben een rangschikking gemaakt in de categorieën van licht naar ernstig. De tabel laat toe om deze rangschikking te wijzigen.
 
 <div class="grid grid-cols-3">
     <div class="grid-colspan-1 grid-rowspan-2">
@@ -465,11 +465,11 @@ const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinne
   <div class="grid-colspan-2">
     <p>
         Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden.
-        Dit is vooral opmerkelijk bij de hoeveelheid zakkenrollerij. Wanneer we bekijken waar die zakkerollerij juist plaatsvond zagen we op de heatmap een duidelijke overheersing in de binnenstad.
+        Dit is vooral opmerkelijk bij de hoeveelheid zakkenrollerij. Wanneer we bekijken waar die zakkenrollerij juist plaatsvond, zagen we op de heatmap een duidelijke overheersing in de binnenstad.
         Alhoewel de zomermaanden waarschijnlijk een hotspot voor zakkenrollerij zijn omdat vele gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in gent vonden we deze data toch opmerkelijk.
     </p>
     <p>
-        Na wat na te denken kwamen we op het grootste evenment in Gent terecht dat toevallig ook in de zomermaanden plaatsvind: "De Gentse Feesten". Om de criminaliteit rond de Gentse feesten duidelijk te maken hebben we op de figuur rechts de zakkenrollerij in de binnenstad geplot.
+        Na wat na te denken kwamen we op het grootste evenement in Gent terecht dat toevallig ook in de zomermaanden plaatsvind: "De Gentse Feesten". Om de criminaliteit rond de Gentse feesten duidelijk te maken hebben we op de figuur rechts de zakkenrollerij in de binnenstad geplot.
         Met enkele rode lijnen staan de datums van de Gentse Feesten aangeduid. Merk op dat in 2020 en 2021 er geen lijn aangeduid staat, de Gentse Feesten werden deze jaren afgelast doorwege de coronapandemie.
     </p>  
   </div>
@@ -533,7 +533,7 @@ const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022
     <div class="grid-colspan-1">
         <h4>Zakkenrollerij</h4>
         <p>
-            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren, waaronder verminderde drukte in openbare ruimtes en het toepassen van social distancing vermoeilijkt het zakkenrollen.
+            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens covid. Deze daling kan worden toegeschreven aan verschillende factoren. De verminderde drukte in openbare ruimtes en het toepassen van social distancing maakt het zakkenrollen moeilijk.
         </p>
     </div>   
 </div>
