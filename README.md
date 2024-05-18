@@ -1,6 +1,9 @@
-# dv24-2
+# dv24-2: Criminaliteitscijfers in Gent.
 
 ## Brent Matthys, Warre Provoost & Mats Van Belle
+
+De finale versie is te vinden op [deze site](https://datavisualiatie-ugent.github.io/project-dv24-2/).
+
 Je kan ons process lezen per week in het [verslag](REPORT.md).
 
 ## Observable Framework
