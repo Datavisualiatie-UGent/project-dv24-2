@@ -461,16 +461,14 @@ const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinne
 ```
 
 ```html
-<div class="grid grid-cols-4">
-  <div class="grid-colspan-2">
+<div class="grid grid-cols-3">
+  <div class="grid-colspan-1">
     <p>
-        Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden.
-        Dit is vooral opmerkelijk bij de hoeveelheid zakkenrollerij. Wanneer we bekijken waar die zakkenrollerij juist plaatsvond, zagen we op de heatmap een duidelijke overheersing in de binnenstad.
-        Alhoewel de zomermaanden waarschijnlijk een hotspot voor zakkenrollerij zijn omdat vele gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in gent vonden we deze data toch opmerkelijk.
+        Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden, nl. bij de zakkenrollerij in de binnenstad. Ondanks dat vele Gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in Gent vonden we deze data toch opmerkelijk.
     </p>
     <p>
-        Na wat na te denken kwamen we op het grootste evenement in Gent terecht dat toevallig ook in de zomermaanden plaatsvind: "De Gentse Feesten". Om de criminaliteit rond de Gentse feesten duidelijk te maken hebben we op de figuur rechts de zakkenrollerij in de binnenstad geplot.
-        Met enkele rode lijnen staan de datums van de Gentse Feesten aangeduid. Merk op dat in 2020 en 2021 er geen lijn aangeduid staat, de Gentse Feesten werden deze jaren afgelast doorwege de coronapandemie.
+        Er was inderdaad iets meer aan de hand, namelijk de Gentse feesten, die met rode lijnen aangeduid zijn.
+        Merk op dat in 2020 en 2021 er geen lijn aangeduid staat, de Gentse Feesten werden deze jaren afgelast doorwege de coronapandemie.
     </p>  
   </div>
   <div class="grid-colspan-2">
@@ -533,7 +531,7 @@ const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022
     <div class="grid-colspan-1">
         <h4>Zakkenrollerij</h4>
         <p>
-            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens Covid. Deze daling kan worden toegeschreven aan verschillende factoren. De verminderde drukte in openbare ruimtes en het toepassen van social distancing maakt het zakkenrollen moeilijk.
+            In deze grafiek wordt specifiek het aantal gevallen van zakkenrollen in de stad weergegeven. Opvallend is de significante afname van dit type misdrijf tijdens Covid. Deze daling kan worden toegeschreven aan de verminderde drukte in openbare ruimtes en het toepassen van social distancing.
         </p>
     </div>   
 </div>
