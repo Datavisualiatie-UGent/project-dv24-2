@@ -7,7 +7,7 @@ Brent Matthys, Warre Provoost en Mats Van Belle
 ***
 ```html
 <div>
-    Voor het vak Datavisualisatie aan UGent, gegeven door Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de <a href="https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers">dataset van Criminaliteitscijfers in Gent</a> te visualiseren.
+    Voor het vak Datavisualisatie aan UGent, gegeven door Prof. Bart Mesuere moesten we als project een dataset visualiseren. Deze pagina is het resultaat van dat project. We hebben gekozen om de <a href="https://data.stad.gent/explore/?disjunctive.keyword&disjunctive.theme&sort=explore.popularity_score&refine.keyword=Criminaliteitscijfers">dataset van Criminaliteitscijfers in Gent</a> te visualiseren.
     </br> </br>
     Voor de visualisaties maken we voornamelijk gebruik van <a href="https://observablehq.com/plot/">observable plot</a> en waar nodig vullen we dit aan met <a href="https://d3js.org/">d3</a>.
 </div>
@@ -91,10 +91,10 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
             Sinds 2018 maakt Stad Gent criminaliteitscijfers beschikbaar. Voor elke maand geeft de dataset het aantal misdrijven in elke wijk voor de gegeven categorieën.
         </p>
         <p>
-            In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddelijk op dat er heel veel parkeerovertredingen zijn.
+            In de figuur rechts kan u het aantal misdrijven zien voor elke categorie. Het valt onmiddellijk op dat er heel veel parkeerovertredingen zijn.
         </p>
         <p>
-            Bij het maken van visualisaties kan het een vertekend beeld geven wanneer een categorie heel dominant aanwezig is. Voor die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
+            Bij het maken van visualisaties kan het een vertekend beeld geven wanneer een categorie heel dominant aanwezig is. Om die reden zullen de visualisaties steeds de mogelijkheid hebben om getoond te worden met en zonder de parkeerovertredingen via een volgende knop:
         </p>
         <div>
             <i>Klik me!</i>
@@ -116,7 +116,7 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
   </div>
   <div class="grid-colspan-1">
       <p>
-          Bekijk zeker ook de 3 andere plots voor een ruimer beeld van de dataset. Het is bijvoorbeeld duidelijk dat, alhoewel de criminaleit redelijk constant blijft doorheen de tijd, we wel een onevenwicht hebben tussen de regio's.
+          Bekijk zeker ook de 3 andere plots voor een ruimer beeld van de dataset. Het is bijvoorbeeld duidelijk dat, alhoewel de criminaliteit redelijk constant blijft doorheen de tijd, we wel een onevenwicht hebben tussen de regio's.
       </p>
       <p>
           Op de figuur links zien we bijvoorbeeld dat het merendeel van de misdrijven in de binnenstad plaatsvindt. Dit kan te maken hebben met het aantal inwoners, een strengere controle of omdat de binnenstad gewoonweg een populaire locatie is. Wat de reden ook mag zijn, het kan belangrijk zijn om deze nuance in je achterhoofd te houden.
@@ -214,10 +214,10 @@ const getMapPlot = mapPlot(mapCrimes, geoData, logScale, mainMapDomain);
         </p>
         <p>
             Deze heatmap maakt duidelijk in welke wijken criminaliteit het hoogst ligt. Zelfs wanneer we de parkeerovertredingen niet in rekening brengen zien we dat
-            criminaliteit het hoogst ligt in het centrum van de stad. Voor deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
+            criminaliteit het hoogst ligt in het centrum van de stad. Om deze reden voegen we de optie toe om een logaritmische schaal te gebruiken.
         </p>
         <p>
-            We kunnen de slider gebruiken om de misdrijven te visualiseren voor een periode doorheen de tijd. Merk hierbij op dat de schaal niet veranderd wanneer de duur van de periode gelijk blijft.
+            We kunnen de slider gebruiken om de misdrijven te visualiseren voor een periode doorheen de tijd. Merk hierbij op dat de schaal niet verandert wanneer de duur van de periode gelijk blijft.
             Op deze manier kunnen we verschillende periodes vergelijken doorheen de tijd.
         </p>
     </div>
@@ -402,7 +402,7 @@ const mapSevere = mapPlot(
 ```
 
 ```html
-Bij het bekijken van criminaliteitcijfers is het interessant om een vergelijking te maken tussen de ernstigheid van de misdrijven. We willen steeds dat het merendeel van de misdrijven slechts een licht misdrijf zijn en dat ernstige misdrijven slechts uitzonderlijk voorkomen.
+Bij het bekijken van criminaliteitcijfers is het interessant om een vergelijking te maken tussen de ernst van de misdrijven. We willen steeds dat het merendeel van de misdrijven slechts een licht misdrijf zijn en dat ernstige misdrijven slechts uitzonderlijk voorkomen.
 ```
 ```html
 Dit tonen we aan in onderstaande visualisatie. We hebben een rangschikking gemaakt in de categorieën van licht naar ernstig. De tabel laat toe om deze rangschikking te wijzigen.
