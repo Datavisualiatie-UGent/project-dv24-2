@@ -1,5 +1,10 @@
 # dv24-2
 
+## Brent Matthys, Warre Provoost & Mats Van Belle
+Je kan ons process lezen per week in het [verslag](REPORT.md).
+
+## Observable Framework
+
 This is an [Observable Framework](https://observablehq.com/framework) project. To start the local preview server, run:
 
 ```
