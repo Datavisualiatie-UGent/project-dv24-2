@@ -76,12 +76,12 @@ let monthCrimes = baseQuery.groupByMonth().getTotal().aggregate("month").result(
 ```
 
 ```js
-const getCategoryPlot = barChart(categoricalCrimes, "categorie", "totaal", "Categorie", "Aantal misdrijven");
-const getRegionPlot = barChart(regionCrimes, "wijk", "totaal", "Wijk", "Aantal misdrijven");
-const getYearPlot = barChart(yearCrimes, "jaar", "totaal", "Jaar", "Aantal misdrijven", false);
+const getCategoryPlot = (width) => barChart(categoricalCrimes, "categorie", "totaal", "Categorie", "Aantal misdrijven", width);
+const getRegionPlot = (width) => barChart(regionCrimes, "wijk", "totaal", "Wijk", "Aantal misdrijven", width);
+const getYearPlot = (width) => barChart(yearCrimes, "jaar", "totaal", "Jaar", "Aantal misdrijven", width, false);
 let monthCrimesSorted = Object.assign([], monthCrimes);
 monthCrimesSorted.map((v, i) => v.maand = `${('0'+(i+1)).slice(-2)}  ${v.maand}`);
-const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aantal misdrijven", false);
+const getMonthPlot = (width) => barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aantal misdrijven", width, false);
 ```
 
 ```html
@@ -103,7 +103,7 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
   </div>
   <div class="grid-colspan-2">
         <h4>Aantal misdrijven per categorie</h4>
-        ${getCategoryPlot}
+        ${resize((width) => getCategoryPlot(width))}
   </div>
 </div>
 ```
@@ -112,7 +112,7 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
 <div class="grid grid-cols-3">
   <div class="grid-colspan-2">
       <h4>Aantal misdrijven per regio</h4>
-      ${getRegionPlot}
+        ${resize((width) => getRegionPlot(width))}
   </div>
   <div class="grid-colspan-1">
       <p>
@@ -129,11 +129,11 @@ const getMonthPlot = barChart(monthCrimesSorted, "maand", "totaal", "Maand", "Aa
 <div class="grid grid-cols-2">
   <div class="grid-colspan-1">
       <h4>Aantal misdrijven per jaar</h4>
-      ${getYearPlot}
+        ${resize((width) => getYearPlot(width))}
   </div>
   <div class="grid-colspan-1">
       <h4>Aantal misdrijven per maand</h4>
-      ${getMonthPlot}  
+        ${resize((width) => getMonthPlot(width))}
   </div>
 </div>
 ```
@@ -457,12 +457,12 @@ resultZakkenrollerijBinnenstad = resultZakkenrollerijBinnenstad.map(({date, tota
     totaal: total
 }))
 
-const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinnenstad, "datum", "totaal", ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
+const getZakkenrollerijBinnenstadLineChart = (width) => lineChart(resultZakkenrollerijBinnenstad, "datum", "totaal", width, ["2018-07-01", "2019-07-01", "2022-07-01", "2023-07-01"], ["Gentse Feesten 2018", "Gentse Feesten 2019", "Gentse Feesten 2022", "Gentse Feesten 2023"]);
 ```
 
 ```html
 <div class="grid grid-cols-3">
-  <div class="grid-colspan-1">
+  <div> 
     <p>
         Een belangrijke opmerking wanneer we de trend van het aantal misdrijven doorheen de tijd bekijken, is dat we soms een piek krijgen tijdens de zomermaanden, nl. bij de zakkenrollerij in de binnenstad. Ondanks dat vele Gentenaars dan genieten van hun vakantie in de vele winkelstraatjes in Gent vonden we deze data toch opmerkelijk.
     </p>
@@ -474,7 +474,7 @@ const getZakkenrollerijBinnenstadLineChart = lineChart(resultZakkenrollerijBinne
   <div class="grid-colspan-2">
       <div>
           <h4>Trend in de zakkenrollerij in de binnenstad.</h4>
-          ${getZakkenrollerijBinnenstadLineChart}
+            ${resize((width) => getZakkenrollerijBinnenstadLineChart(width))}
       </div>
   </div>
 </div>
@@ -496,7 +496,7 @@ zakrollers = zakrollers.map(({date, total}) => ({
     totaal: total
 }))
 
-const covidPlotZak = lineChart(zakrollers, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
+const covidPlotZak = (width) => lineChart(zakrollers, "datum", "totaal", width, ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
 
 ```
 
@@ -516,7 +516,7 @@ allCrime = allCrime.map(({date, total}) => ({
     totaal: total
 }))
 
-const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
+const covidPlotAll = (width) => lineChart(allCrime, "datum", "totaal", width, ["2020-03-01", "2022-05-01"], ["Start Covid", "Einde Covid"])
 
 ```
 ```html
@@ -537,10 +537,10 @@ const covidPlotAll = lineChart(allCrime, "datum", "totaal", ["2020-03-01", "2022
 </div>
 <div class="grid grid-cols-2">
     <div class="grid-colspan-1">
-      ${covidPlotAll}
+        ${resize((width) => covidPlotAll(width))}
     </div>
     <div class="grid-colspan-1">
-      ${covidPlotZak}
+        ${resize((width) => covidPlotZak(width))}
     </div>
 </div>
 ```
