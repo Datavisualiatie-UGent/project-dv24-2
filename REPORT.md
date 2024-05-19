@@ -64,6 +64,9 @@ Opmerkingen:
 **Warre**: start implementatie van de kaart van Gent in d3.
 
 **Mats**: Basic plots (barcharts) en verbetering van de fetching van de data.
+Dit was het eerste prototype van de bar charts (gemaakt met echarts):
+![bar1](https://github.com/Datavisualiatie-UGent/project-dv24-2/assets/109791839/3d7c647a-0be8-4ce8-850c-466044d968c4)
+![bar2](https://github.com/Datavisualiatie-UGent/project-dv24-2/assets/109791839/71e3eff8-6553-4f4a-94ab-ba480b1f8a20)
 
 ## Paasvakantie
 
@@ -89,11 +92,17 @@ Opmerkingen:
 
 **Iedereen**: Implementeren verdere ideeën & meeting met de prof op 22 april.
 
+
 **Brent**: Parallele coördinaten geïmplementeerd.
+Dit was het finale prototype van het parallele coordinaten plot:
+![parallel](https://github.com/Datavisualiatie-UGent/project-dv24-2/assets/109791839/ceaeadc5-9778-4d23-bea1-4dd471b92baf)
 
 **Mats**: implementeren linechart plot.
 
 **Warre**: verder werken heatmap (breedte geupdate, filtering van de data, etc)
+Dit was het finale prototype van de d3 kaart:
+![map_old](https://github.com/Datavisualiatie-UGent/project-dv24-2/assets/109791839/d50edac7-e374-4efb-922f-9b002016019e)
+
 
 **Feedback meeting met de prof**:
 - Zoeken naar patronen/verhalen zoals de Gentse Feesten
